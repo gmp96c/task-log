@@ -4,12 +4,17 @@ const { GraphQLApp } = require('@keystonejs/app-graphql');
 const { AdminUIApp } = require('@keystonejs/app-admin-ui');
 const { KnexAdapter: Adapter } = require('@keystonejs/adapter-knex');
 const UserSchema = require('./lists/User');
+const LogSchema = require('./lists/Log.js');
+const TaskSchema = require('./lists/Task');
+const TipSchema = require('./lists/Tip');
+
 const initialiseData = require('./initial-data');
 require('dotenv').config();
 
 const PROJECT_NAME = 'daily-todo';
 const adapterConfig = {
   knexOptions: {
+    dropDatabase: true,
     client: 'pg',
     connection: {
       database: process.env.DB_NAME,
@@ -28,9 +33,10 @@ const keystone = new Keystone({
   adapter: new Adapter(adapterConfig),
   onConnect: process.env.CREATE_TABLES !== 'true' && initialiseData,
 });
-
 keystone.createList('User', UserSchema);
-
+keystone.createList('Log', LogSchema);
+keystone.createList('Task', TaskSchema);
+keystone.createList('Tip', TipSchema);
 const authStrategy = keystone.createAuthStrategy({
   type: PasswordAuthStrategy,
   list: 'User',

@@ -29,11 +29,6 @@ module.exports = {
       ref: 'Task',
       many: true,
     },
-    historicTasks: {
-      type: Relationship,
-      ref: 'Task',
-      many: true,
-    },
     logs: {
       type: Relationship,
       ref: 'Log',
@@ -41,7 +36,7 @@ module.exports = {
     },
     pinnedTips: {
       type: Relationship,
-      ref: 'Log',
+      ref: 'Tip.pinnedBy',
       many: true,
     },
   },

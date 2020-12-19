@@ -7,29 +7,31 @@ module.exports = {
     createdAt: {
       type: DateTimeUtc,
       format: 'dd/MM/yyyy HH:mm O',
+      access: false,
     },
-    createdBy: {
+    creator: {
       type: Relationship,
       ref: 'User',
       many: false,
       isRequired: true,
+      access: false,
     },
-    task: {
+    users: {
       type: Relationship,
-      ref: 'Task',
-      many: false,
-      isRequired: true,
+      ref: 'User',
+      many: true,
+      access: false,
     },
-    pinnedBy: {
+    tips: {
       type: Relationship,
-      ref: 'User.pinnedTips',
+      ref: 'Tip',
       many: true,
     },
   },
   // List-level access controls
   access: {
-    read: access.userExists,
-    update: access.userIsAdmin,
+    read: access.userIsAdminOrOwner,
+    update: access.userIsAdminOrOwner,
     create: access.userExists,
     delete: access.userIsAdminOrOwner,
   },

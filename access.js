@@ -8,10 +8,12 @@ const userOwnsItem = ({ authentication: { item: user } }) => {
   // https://www.keystonejs.com/api/access-control#graphqlwhere
   return { id: user.id };
 };
+const userExists = ({ authentication: { item: user } }) => !!user;
+
 const userIsAdminOrOwner = (auth) => {
-  const isAdmin = access.userIsAdmin(auth);
-  const isOwner = access.userOwnsItem(auth);
+  const isAdmin = userIsAdmin(auth);
+  const isOwner = userOwnsItem(auth);
   return isAdmin || isOwner;
 };
-const access = { userIsAdmin, userOwnsItem, userIsAdminOrOwner };
+const access = { userIsAdmin, userOwnsItem, userIsAdminOrOwner, userExists };
 module.exports = { access };

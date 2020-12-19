@@ -24,7 +24,7 @@ module.exports = {
   access: {
     read: access.userIsAdminOrOwner,
     update: access.userIsAdminOrOwner,
-    create: access.userIsAdminOrOwner,
+    create: access.userExists,
     delete: access.userIsAdminOrOwner,
   },
 };
