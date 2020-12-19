@@ -16,4 +16,9 @@ function useUser() {
   return { loading, data };
 }
 
-export { CURRENT_USER_QUERY, useUser };
+function useIsAuth() {
+  const { loading, data } = useUser();
+  return loading ? false : data.authenticatedUser;
+}
+
+export { CURRENT_USER_QUERY, useUser, useIsAuth };

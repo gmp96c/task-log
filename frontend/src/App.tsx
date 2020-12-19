@@ -4,21 +4,25 @@ import { useQuery, useMutation, gql } from "@apollo/client";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { Login } from "./components/Login";
 import { useUser } from "./hooks/User";
+import Layout from "./components/Layout";
 
 export const App = () => {
-  const auth = useUser();
-  if (auth.loading) {
+  const { loading, data } = useUser();
+  console.log(data);
+  if (loading) {
     return <h1>loading</h1>;
   }
   return (
     <CssBaseline>
-      {auth.data !== undefined ? (
-        <MainWrapper>
-          <h3>whats up?</h3>
-        </MainWrapper>
-      ) : (
-        <Login />
-      )}
+      <Layout>
+        {!!data.authenticatedUser ? (
+          <MainWrapper>
+            <h3>whats up?</h3>
+          </MainWrapper>
+        ) : (
+          <Login />
+        )}
+      </Layout>
     </CssBaseline>
   );
 };
