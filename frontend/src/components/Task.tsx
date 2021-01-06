@@ -6,7 +6,6 @@ interface TProps {
 }
 
 export const Task = ({ item }: TProps) => {
-  console.log(item);
   return (
     <div>
       <h4>{item.body}</h4>

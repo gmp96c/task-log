@@ -1,4 +1,4 @@
-import gql from "graphql-tag";
+import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client";
 import { useState, useEffect } from "react";
 const CURRENT_USER_QUERY = gql`
@@ -14,13 +14,12 @@ const CURRENT_USER_QUERY = gql`
 function useAuth() {
   const { loading, data } = useQuery(CURRENT_USER_QUERY);
   const [isAuth, setAuth] = useState(false);
+  const [id, setId] = useState(undefined);
   useEffect(() => {
     setAuth(!!data?.authenticatedUser);
+    // setId(data?.authenticatedUser.id)
   }, [data]);
   return { userLoading: loading, userData: data, isAuth };
 }
-function useTasks() {
-  const { loading, data } = useQuery(CURRENT_USER_QUERY);
-  const [tasks, setTasks] = useState([]);
-}
+
 export { CURRENT_USER_QUERY, useAuth };

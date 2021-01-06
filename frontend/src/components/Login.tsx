@@ -22,10 +22,8 @@ export const Login = ({}) => {
     variables: { email, password },
     refetchQueries: [{ query: CURRENT_USER_QUERY }],
   });
-
   const submitHandler = async () => {
     try {
-      console.log({ email, password });
       let loginRes = await doLogin();
     } catch (err) {
       console.log(err);

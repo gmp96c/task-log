@@ -16,7 +16,7 @@ export const App = () => {
     <Layout>
       {isAuth ? (
         <MainWrapper>
-          <AddTask />
+          <AddTask user={userData?.authenticatedUser?.id}/>
           <Tasks user={userData?.authenticatedUser?.id} />
         </MainWrapper>
       ) : (

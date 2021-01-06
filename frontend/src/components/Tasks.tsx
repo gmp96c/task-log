@@ -26,7 +26,6 @@ export const Tasks = (props: { user: string }) => {
   if (loading) {
     return <h2>loading</h2>;
   }
-  console.log(data);
   return (
     <div>
       <ul>
