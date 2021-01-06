@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { TextField, Button } from "@material-ui/core";
 import { useMutation, gql } from "@apollo/client";
-import { CURRENT_USER_QUERY } from "../hooks/User";
+import { CURRENT_USER_QUERY } from "../hooks/useAuth";
 
 const SIGNIN_MUTATION = gql`
   mutation SIGNIN_MUTATION($email: String!, $password: String!) {
@@ -77,8 +77,8 @@ export const Login = ({}) => {
 };
 const LoginStyle = styled.main`
   display: flex;
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
   box-sizing: border-box;
   background: #d3d3d3;
   align-items: center;
@@ -103,7 +103,7 @@ const LoginStyle = styled.main`
       padding: 0.5rem 0;
     }
     #loginControl {
-      margin-top: 1rem;
+      /* margin-top: 1rem; */
       display: flex;
       justify-content: space-between;
     }

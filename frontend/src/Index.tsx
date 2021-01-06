@@ -8,6 +8,7 @@ import {
   createHttpLink,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+import "normalize.css";
 
 const link = createHttpLink({
   uri: process.env.KEYSTONE_URI,

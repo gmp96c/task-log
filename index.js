@@ -35,7 +35,7 @@ const keystone = new Keystone({
 });
 keystone.createList('User', UserSchema);
 keystone.createList('Log', LogSchema);
-keystone.createList('Task', TaskSchema);
+keystone.createList('Task', TaskSchema(keystone));
 keystone.createList('Tip', TipSchema);
 const authStrategy = keystone.createAuthStrategy({
   type: PasswordAuthStrategy,

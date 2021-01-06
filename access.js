@@ -13,7 +13,7 @@ const userExists = ({ authentication: { item: user } }) => !!user;
 const userIsAdminOrOwner = (auth) => {
   const isAdmin = userIsAdmin(auth);
   const isOwner = userOwnsItem(auth);
-  return isAdmin || isOwner;
+  return isAdmin || !!isOwner;
 };
 const access = { userIsAdmin, userOwnsItem, userIsAdminOrOwner, userExists };
 module.exports = { access };

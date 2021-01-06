@@ -1,15 +1,18 @@
-body {
-  font-size: 10px;
-}
+@import url("https://fonts.googleapis.com/css?family=Rubik");
 
-// #root {
-//   margin: 0;
-//   padding: 0;
-//   background: red;
-//   display: grid;
-//   height: 100vh;
-//   width: 100vw;
-//   grid-template-areas:
-//     "left main right";
-//   grid-template-columns: 1fr 2fr 1fr;
-// }
+body {
+  --text-color: #232323;
+  --background-color: #efefef;
+
+  margin: 0;
+  padding: 0;
+  font-size: 10px;
+  height: 100vh;
+  font-family: "Rubik", sans-serif;
+  color: var(--text-color);
+}
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}

@@ -1,9 +1,8 @@
 import React from 'react';
-import { useUser } from '../hooks/User';
 
-export const UserInfo = () => {
-  const info = useUser();
-  if (info.loading) {
+export const UserInfo = ({ info }) => {
+  console.log(info);
+  if (!info.authenticatedUser) {
     return <h3> </h3>;
   }
   console.log(info);

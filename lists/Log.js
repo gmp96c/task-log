@@ -1,4 +1,7 @@
 const { Text, Relationship, DateTimeUtc } = require('@keystonejs/fields');
+const {
+  AuthedRelationship,
+} = require('@keystonejs/fields-authed-relationship');
 const { access } = require('../access.js');
 
 module.exports = {
@@ -7,9 +10,16 @@ module.exports = {
     createdAt: {
       type: DateTimeUtc,
       format: 'dd/MM/yyyy HH:mm O',
+      access: {
+        read: access.userIsAdminOrOwner,
+        update: false,
+        create: false,
+        delete: false,
+      },
+      defaultValue: () => new Date(),
     },
     creator: {
-      type: Relationship,
+      type: AuthedRelationship,
       ref: 'User',
       many: false,
       isRequired: true,
@@ -20,6 +30,7 @@ module.exports = {
       many: false,
     },
   },
+  labelResolver: (item) => item.body,
   // List-level access controls
   access: {
     read: access.userIsAdminOrOwner,
