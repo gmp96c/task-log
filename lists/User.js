@@ -26,7 +26,7 @@ module.exports = {
     },
     currentTasks: {
       type: Relationship,
-      ref: 'Task',
+      ref: 'Task.usedBy',
       many: true,
     },
     logs: {

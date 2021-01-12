@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useQuery, gql } from "@apollo/client";
 import { TaskConfig } from "../Types";
 import { Task } from "./Task";
-const GET_TASKS = gql`
+export const GET_TASKS = gql`
   query GET_TASKS($id: ID!) {
     User(where: { id: $id }) {
       name
@@ -27,12 +27,15 @@ export const Tasks = (props: { user: string }) => {
     return <h2>loading</h2>;
   }
   return (
-    <div>
-      <ul>
-        {data.User.currentTasks.map((task: TaskConfig) => (
-          <Task key={task.id} item={task} />
-        ))}
-      </ul>
-    </div>
+    <TaskListStyle>
+      {data.User.currentTasks.map((task: TaskConfig) => (
+        <Task key={task.id} item={task} />
+      ))}
+    </TaskListStyle>
   );
 };
+const TaskListStyle = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;

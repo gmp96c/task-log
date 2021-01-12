@@ -1,4 +1,5 @@
 import React from "react";
+import styled from "styled-components";
 import { TaskConfig, TipConfig } from "../Types";
 
 interface TProps {
@@ -7,13 +8,19 @@ interface TProps {
 
 export const Task = ({ item }: TProps) => {
   return (
-    <div>
+    <TaskStyle>
       <h4>{item.body}</h4>
       <ul>
         {item.tips.map((tip: TipConfig) => {
           <li key={tip.id}>tip.body</li>;
         })}
       </ul>
-    </div>
+    </TaskStyle>
   );
 };
+
+const TaskStyle = styled.div`
+  max-width: 800px;
+  width: 90%;
+  text-align: center;
+`;

@@ -7,7 +7,7 @@ const { access } = require('../access.js');
 
 module.exports = (keystone) => ({
   fields: {
-    body: { type: Text, isUnique: true },
+    body: { type: Text, isUnique: true, isRequired: true },
     createdAt: {
       type: DateTimeUtc,
       format: 'dd/MM/yyyy HH:mm O',
@@ -28,6 +28,11 @@ module.exports = (keystone) => ({
     tips: {
       type: Relationship,
       ref: 'Tip',
+      many: true,
+    },
+    usedBy: {
+      type: Relationship,
+      ref: 'User.currentTasks',
       many: true,
     },
   },
@@ -51,7 +56,6 @@ module.exports = (keystone) => ({
             data: { currentTasks: { connect: [{ id: updatedItem.id }] } },
           },
         });
-        console.log(updatedUser);
       }
     },
   },

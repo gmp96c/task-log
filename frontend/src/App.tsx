@@ -16,7 +16,7 @@ export const App = () => {
     <Layout>
       {isAuth ? (
         <MainWrapper>
-          <AddTask user={userData?.authenticatedUser?.id}/>
+          <AddTask user={userData?.authenticatedUser?.id} />
           <Tasks user={userData?.authenticatedUser?.id} />
         </MainWrapper>
       ) : (
@@ -31,11 +31,7 @@ const MainWrapper = styled.main`
   padding: 25px;
   width: 90%;
   max-width: 900px;
-  .taskList {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    /* margin-top: 2rem; */
-    gap: 10px;
-  }
+  display: flex;
+  width: 100%;
+  flex-direction: column;
 `;
