@@ -1,7 +1,8 @@
 const crypto = require('crypto');
+
 const randomString = () => crypto.randomBytes(6).hexSlice();
 
-module.exports = async keystone => {
+module.exports = async (keystone) => {
   // Count existing users
   const {
     data: {
@@ -17,7 +18,7 @@ module.exports = async keystone => {
   });
 
   if (count === 0) {
-    const password = randomString();
+    const password = 'lol';
     const email = 'admin@example.com';
 
     const { errors } = await keystone.executeGraphQL({
