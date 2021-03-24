@@ -1,3 +1,4 @@
+
 import { gql, useMutation } from '@apollo/client';
 import { Button } from '@material-ui/core';
 import React from 'react';
@@ -12,6 +13,7 @@ const SIGNOUT_MUTATION = gql`
         }
     }
 `;
+
 
 export default function Layout({ children }) {
     const [doLogout, { loading: mutationLoading, error: mutationError }] = useMutation(SIGNOUT_MUTATION, {

@@ -1,11 +1,13 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import { TextField } from '@material-ui/core';
-import React, { useState } from 'react';
+import React, { ReactElement, useState } from 'react';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useCombobox } from 'downshift';
 import debounce from 'lodash.debounce';
 import styled from 'styled-components';
 import { TaskConfig } from '../Types';
 import { GET_TASKS } from './Tasks';
+import { client } from '../Index';
 
 const CREATE_TASK_MUTATION = gql`
     mutation CREATE_TASK_MUTATION($body: String!) {
@@ -15,9 +17,8 @@ const CREATE_TASK_MUTATION = gql`
         }
     }
 `;
-interface newTask {
+interface NewTaskConfig {
     body: string;
-    isNew: true;
 }
 
 const ADD_TASK_MUTATION = gql`
@@ -38,23 +39,54 @@ const SEARCH_TASKS_QUERY = gql`
         }
     }
 `;
-export const AddTask = (props: { user: string }) => {
-    const [selectedTask, setSelectedTask] = useState<TaskConfig | newTask>({
+
+function isNewTask(selectedTask: TaskConfig | NewTaskConfig): selectedTask is NewTaskConfig{
+  console.log(selectedTask);
+  console.log((selectedTask as TaskConfig).id );
+  return (selectedTask as TaskConfig).id === undefined;
+}
+export const AddTask = (props: { user: string }) : ReactElement => {
+    const [selectedTask, setSelectedTask] = useState<TaskConfig | NewTaskConfig>({
         body: '',
-        isNew: true,
     });
     const [addTask, addTaskRes] = useMutation(ADD_TASK_MUTATION, {
         variables: {
             taskId: selectedTask.id,
             userId: props.user,
         },
-        refetchQueries: [{ query: GET_TASKS }],
+        update: (cache, {data})=>{
+          console.log(data);
+          const existingTasks = cache.readQuery({query:GET_TASKS, variables:{
+            id: props.user
+          }});
+          console.log(existingTasks);
+          cache.writeQuery({
+            query: ADD_TASK_MUTATION,
+            data,
+            variables:{
+              id: props.user
+            }
+          });
+        }
     });
     const [createTask, createTaskRes] = useMutation(CREATE_TASK_MUTATION, {
         variables: {
             body: selectedTask.body,
         },
-        refetchQueries: [{ query: GET_TASKS }],
+        update: (cache, {data})=>{
+          console.log(data);
+          const existingTasks = cache.readQuery({query:GET_TASKS, variables:{
+            id: props.user
+          }});
+          console.log(existingTasks);
+          cache.writeQuery({
+            query: CREATE_TASK_MUTATION,
+            data,
+            variables:{
+              id: props.user
+            }
+          });
+        }
     });
     const [findTasks, findTasksRes] = useLazyQuery(SEARCH_TASKS_QUERY, {
         fetchPolicy: 'no-cache',
@@ -75,6 +107,7 @@ export const AddTask = (props: { user: string }) => {
         items: tasks,
         itemToString: (item: TaskConfig | null) => item.body,
         onInputValueChange: ({ inputValue }) => {
+          console.log('running change');
             if (inputValue || inputValue == '') {
                 setSelectedTask({ body: inputValue, isNew: true });
                 if (inputValue.length > 2) {
@@ -84,18 +117,19 @@ export const AddTask = (props: { user: string }) => {
                 }
             }
         },
-        onSelectedItemChange: ({ selectedItem }) => {
-            console.log(selectedItem);
-            if (selectedItem) {
-                setSelectedTask(selectedItem);
+        onSelectedItemChange: ({ selectedItem: item }) => {
+          console.log('running selected')
+            if (item) {
+                setSelectedTask(item);
             }
         },
     });
-    const handleSubmit = async () => {
-        let res;
-        res = await (selectedTask?.isNew ? createTask() : addTask());
+    async function handleSubmit(e):Promise<void>{
+      e.preventDefault();
+      console.log(`isNew Task ${isNewTask(selectedTask)}`);
+        const res = await (isNewTask(selectedTask)? createTask() : addTask());
         console.log(res);
-        setSelectedTask({ body: '', isNew: true });
+        setSelectedTask({ body: '' });
     };
     return (
         <AddTaskStyle>
@@ -109,7 +143,7 @@ export const AddTask = (props: { user: string }) => {
         >
           &#8595;
         </button> */}
-                <button onClick={handleSubmit}>Add</button>
+                <button type="submit" onClick={handleSubmit}>Add</button>
             </div>
             <ul {...getMenuProps()}>
                 {isOpen &&
