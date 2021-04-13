@@ -26,7 +26,7 @@ module.exports = {
     },
     task: {
       type: Relationship,
-      ref: 'Task',
+      ref: 'Task.tips',
       many: false,
       isRequired: true,
     },

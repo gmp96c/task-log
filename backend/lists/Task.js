@@ -27,7 +27,7 @@ module.exports = (keystone) => ({
     },
     tips: {
       type: Relationship,
-      ref: 'Tip',
+      ref: 'Tip.task',
       many: true,
     },
     usedBy: {
