@@ -18,9 +18,9 @@ function useAuth() {
     const [id, setId] = useState();
     useEffect(() => {
         setAuth(!!data?.authenticatedUser);
-        // setId(data?.authenticatedUser.id)
+        setId(data?.authenticatedUser?.id);
     }, [data]);
-    return { userLoading: loading, userData: data, isAuth };
+    return { userLoading: loading, userData: data, isAuth, id };
 }
 
 export { CURRENT_USER_QUERY, useAuth };

@@ -7,6 +7,7 @@ import Layout from './components/Layout';
 import { AddTask } from './components/AddTask';
 import { Tasks } from './components/Tasks';
 
+
 export const App = () => {
     const { userLoading, isAuth, userData } = useAuth();
     if (userLoading) {

@@ -5,9 +5,8 @@ import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useCombobox } from 'downshift';
 import debounce from 'lodash.debounce';
 import styled from 'styled-components';
-import { TaskConfig } from '../Types';
+import { TaskConfig, UserConfig } from '../Types';
 import { GET_TASKS } from './Tasks';
-import { client } from '../Index';
 
 const CREATE_TASK_MUTATION = gql`
     mutation CREATE_TASK_MUTATION($body: String!) {
@@ -24,6 +23,8 @@ interface NewTaskConfig {
 const ADD_TASK_MUTATION = gql`
     mutation ADD_TASK_MUTATION($userId: ID!, $taskId: ID!) {
         updateUser(id: $userId, data: { currentTasks: { connect: [{ id: $taskId }] } }) {
+          name
+          id
             currentTasks {
                 body
             }
@@ -41,8 +42,7 @@ const SEARCH_TASKS_QUERY = gql`
 `;
 
 function isNewTask(selectedTask: TaskConfig | NewTaskConfig): selectedTask is NewTaskConfig{
-  console.log(selectedTask);
-  console.log((selectedTask as TaskConfig).id );
+
   return (selectedTask as TaskConfig).id === undefined;
 }
 export const AddTask = (props: { user: string }) : ReactElement => {
@@ -54,36 +54,28 @@ export const AddTask = (props: { user: string }) : ReactElement => {
             taskId: selectedTask.id,
             userId: props.user,
         },
-        update: (cache, {data})=>{
-          console.log(data);
-          const existingTasks = cache.readQuery({query:GET_TASKS, variables:{
-            id: props.user
-          }});
-          console.log(existingTasks);
-          cache.writeQuery({
-            query: ADD_TASK_MUTATION,
-            data,
-            variables:{
-              id: props.user
-            }
-          });
-        }
     });
     const [createTask, createTaskRes] = useMutation(CREATE_TASK_MUTATION, {
         variables: {
             body: selectedTask.body,
         },
-        update: (cache, {data})=>{
-          console.log(data);
-          const existingTasks = cache.readQuery({query:GET_TASKS, variables:{
+        update: (cache, {data: {createTask: task}})=>{
+          const cachedData: {User: UserConfig} | null= cache.readQuery({query:GET_TASKS, variables:{
             id: props.user
           }});
-          console.log(existingTasks);
-          cache.writeQuery({
-            query: CREATE_TASK_MUTATION,
-            data,
-            variables:{
-              id: props.user
+          if(cachedData === null){
+            return;
+          }
+          const {User} = cachedData;
+          cache.writeFragment({
+            id: `User:${props.user}`,
+            fragment: gql`
+            fragment TaskUpdate on User {
+              currentTasks
+            }
+            `,
+            data:{
+              currentTasks: [...User.currentTasks, {...task, tips: []}]
             }
           });
         }
@@ -93,6 +85,13 @@ export const AddTask = (props: { user: string }) : ReactElement => {
     });
     const tasks: [TaskConfig] = findTasksRes?.data?.results ? findTasksRes?.data.results : [];
     const debouncedFindTasks = debounce(findTasks, 200);
+    function getDuplicateTask(list, input): false|TaskConfig{
+      const dupes = list.filter(el=>el.body.split(' ').join('').toLowerCase() == input.split(' ').join('').toLowerCase());
+      if(dupes.length === 0){
+        return false;
+      }
+        return dupes[0];
+    }
     const {
         isOpen,
         selectedItem,
@@ -106,9 +105,16 @@ export const AddTask = (props: { user: string }) : ReactElement => {
     } = useCombobox({
         items: tasks,
         itemToString: (item: TaskConfig | null) => item.body,
-        onInputValueChange: ({ inputValue }) => {
-          console.log('running change');
-            if (inputValue || inputValue == '') {
+        onStateChange: ({inputValue, type,...val}) => {
+            if (type =='__input_change__' && inputValue || inputValue == '') {
+              const dupe = getDuplicateTask(tasks, inputValue);
+              if(dupe){
+                setSelectedTask(dupe);
+                debouncedFindTasks({
+                  variables: { searchString: inputValue },
+               });
+                return;
+              }
                 setSelectedTask({ body: inputValue, isNew: true });
                 if (inputValue.length > 2) {
                     debouncedFindTasks({
@@ -126,9 +132,7 @@ export const AddTask = (props: { user: string }) : ReactElement => {
     });
     async function handleSubmit(e):Promise<void>{
       e.preventDefault();
-      console.log(`isNew Task ${isNewTask(selectedTask)}`);
         const res = await (isNewTask(selectedTask)? createTask() : addTask());
-        console.log(res);
         setSelectedTask({ body: '' });
     };
     return (

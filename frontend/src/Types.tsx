@@ -10,3 +10,10 @@ export interface TaskConfig {
     readonly body: string;
     tips: TipConfig[];
 }
+
+export interface UserConfig {
+  readonly __typeName: "User";
+  readonly id: string;
+  readonly name: string;
+  currentTasks: TaskConfig[];
+}
