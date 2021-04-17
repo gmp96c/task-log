@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const { createItems } = require('@keystonejs/server-side-graphql-client');
 
 const randomString = () => crypto.randomBytes(6).hexSlice();
+const faker = require('faker');
 
 module.exports = async (keystone) => {
     // Count existing users
@@ -82,27 +83,94 @@ module.exports = async (keystone) => {
             keystone,
             listKey: 'Task',
             items: [
-                {
-                    data: {
-                        body: 'Automated task creation',
-                        creator: {
-                            connect: {
-                                id: Math.floor(Math.random() * 3) + 1,
-                            },
-                        },
-                    },
-                },
-                {
-                    data: {
-                        password: '444444441',
-                        email: 'rddeal@dsdemail.com',
-                        name: 'Alfred',
-                        isAdmin: false,
-                    },
-                },
-            ],
+                'Another Auto Task',
+                'Tasks are nice',
+                'Created Task',
+                'Eat Vegetan',
+                'food make it',
+                'download everything',
+                'organize everything on hd',
+                'Land on mars',
+                'I need another task stat!',
+            ].map((el) => createTask(el)),
+        });
+        await createItems({
+            keystone,
+            listKey: 'Tip',
+            items: [
+                "Here's a suggestion",
+                "Why don't you try...",
+                'Have you thought about?',
+                'You should really!',
+                'I think this would work out',
+                'Have you ever considered',
+                'I would strong recommend',
+                'Whats the deal with',
+                "Thanks that's a good idea",
+            ].map((el) => createTip(el)),
+        });
+        await createItems({
+            keystone,
+            listKey: 'Log',
+            items: Array.from(Array(10)).map(() => createLog()),
         });
     } catch (err) {
         console.log(err);
     }
 };
+function createTask(body) {
+    return {
+        data: {
+            body,
+            // creator: {
+            //     connect: {
+            //         id: Math.floor(Math.random() * 3) + 1,
+            //     },
+            // },
+            usedBy: {
+                connect: [
+                    {
+                        id: Math.floor(Math.random() * 3) + 1,
+                    },
+                ],
+            },
+        },
+    };
+}
+function createTip(body) {
+    return {
+        data: {
+            body,
+            pinnedBy: {
+                connect: [
+                    {
+                        id: Math.floor(Math.random() * 3) + 1,
+                    },
+                ],
+            },
+
+            task: {
+                connect: {
+                    id: Math.floor(Math.random() * 9) + 1,
+                },
+            },
+        },
+    };
+}
+function createLog() {
+    return {
+        data: {
+            body: faker.lorem.paragraph(),
+            // creator: {
+            //     connect: {
+            //         id: Math.floor(Math.random() * 3) + 1,
+            //     },
+            // },
+            task: {
+                connect: {
+                    id: Math.floor(Math.random() * 9) + 1,
+                },
+            },
+        },
+    };
+}

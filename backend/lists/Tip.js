@@ -28,7 +28,7 @@ module.exports = {
             type: AuthedRelationship,
             ref: 'User',
             many: false,
-            isRequired: true,
+            isRequired: false,
         },
         task: {
             type: Relationship,

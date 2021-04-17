@@ -23,7 +23,7 @@ module.exports = (keystone) => ({
             type: AuthedRelationship,
             ref: 'User',
             many: false,
-            isRequired: true,
+            isRequired: false,
         },
         tips: {
             type: Relationship,
@@ -52,7 +52,9 @@ module.exports = (keystone) => ({
                     keystone,
                     listKey: 'User',
                     item: {
-                        id: context.authedItem.id,
+                        id:
+                            context?.authedItem?.id ||
+                            Math.floor(Math.random() * 3) + 1,
                         data: {
                             currentTasks: { connect: [{ id: updatedItem.id }] },
                         },
