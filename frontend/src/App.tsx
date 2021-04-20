@@ -6,7 +6,9 @@ import { useAuth } from './hooks/useAuth';
 import Layout from './components/Layout';
 import { AddTask } from './components/AddTask';
 import { Tasks } from './components/Tasks';
+import { UserConfig } from './Types';
 
+export const UserContext = React.createContext<undefined | UserConfig>(undefined);
 
 export const App = () => {
     const { userLoading, isAuth, userData } = useAuth();
@@ -17,8 +19,10 @@ export const App = () => {
         <Layout>
             {isAuth ? (
                 <MainWrapper>
-                    <AddTask user={userData?.authenticatedUser?.id} />
-                    <Tasks user={userData?.authenticatedUser?.id} />
+                    <UserContext.Provider value={userData?.authenticatedUser}>
+                        <AddTask user={userData?.authenticatedUser?.id} />
+                        <Tasks user={userData?.authenticatedUser?.id} />
+                    </UserContext.Provider>
                 </MainWrapper>
             ) : (
                 <Login />

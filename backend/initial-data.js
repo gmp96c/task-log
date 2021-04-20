@@ -107,6 +107,7 @@ module.exports = async (keystone) => {
                 'I would strong recommend',
                 'Whats the deal with',
                 "Thanks that's a good idea",
+                ...Array.from(Array(20)).map(() => faker.lorem.sentence()),
             ].map((el) => createTip(el)),
         });
         await createItems({

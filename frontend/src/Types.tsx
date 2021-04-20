@@ -2,6 +2,8 @@ export interface TipConfig {
     readonly __typename: 'Tip';
     readonly id: string;
     readonly body: string;
+    readonly pinnedByCount: number;
+    pinnedBy?: [UserConfig];
 }
 
 export interface TaskConfig {
@@ -12,8 +14,11 @@ export interface TaskConfig {
 }
 
 export interface UserConfig {
-  readonly __typeName: "User";
-  readonly id: string;
-  readonly name: string;
-  currentTasks: TaskConfig[];
+    readonly __typeName: 'User';
+    readonly id: string;
+    readonly name: string;
+    readonly email?: string;
+    currentTasks?: TaskConfig[];
 }
+
+export type ModeType = 'Base' | 'Settings' | 'Log' | 'History';

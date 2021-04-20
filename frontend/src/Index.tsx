@@ -4,6 +4,7 @@ import { ApolloProvider, ApolloClient, InMemoryCache, createHttpLink } from '@ap
 import { setContext } from '@apollo/client/link/context';
 import { App } from './App';
 import 'normalize.css';
+import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 
 const link = createHttpLink({
     uri: process.env.KEYSTONE_URI,
