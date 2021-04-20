@@ -6,7 +6,7 @@ import { useCombobox } from 'downshift';
 import debounce from 'lodash.debounce';
 import styled from 'styled-components';
 import { TaskConfig, UserConfig } from '../Types';
-import { GET_TASKS } from './Tasks';
+import { GET_TASKS_QUERY } from './Tasks';
 
 const CREATE_TASK_MUTATION = gql`
     mutation CREATE_TASK_MUTATION($body: String!) {
@@ -23,8 +23,8 @@ interface NewTaskConfig {
 const ADD_TASK_MUTATION = gql`
     mutation ADD_TASK_MUTATION($userId: ID!, $taskId: ID!) {
         updateUser(id: $userId, data: { currentTasks: { connect: [{ id: $taskId }] } }) {
-          name
-          id
+            name
+            id
             currentTasks {
                 body
             }
@@ -41,11 +41,10 @@ const SEARCH_TASKS_QUERY = gql`
     }
 `;
 
-function isNewTask(selectedTask: TaskConfig | NewTaskConfig): selectedTask is NewTaskConfig{
-
-  return (selectedTask as TaskConfig).id === undefined;
+function isNewTask(selectedTask: TaskConfig | NewTaskConfig): selectedTask is NewTaskConfig {
+    return (selectedTask as TaskConfig).id === undefined;
 }
-export const AddTask = (props: { user: string }) : ReactElement => {
+export const AddTask = (props: { user: string }): ReactElement => {
     const [selectedTask, setSelectedTask] = useState<TaskConfig | NewTaskConfig>({
         body: '',
     });
@@ -59,37 +58,42 @@ export const AddTask = (props: { user: string }) : ReactElement => {
         variables: {
             body: selectedTask.body,
         },
-        update: (cache, {data: {createTask: task}})=>{
-          const cachedData: {User: UserConfig} | null= cache.readQuery({query:GET_TASKS, variables:{
-            id: props.user
-          }});
-          if(cachedData === null){
-            return;
-          }
-          const {User} = cachedData;
-          cache.writeFragment({
-            id: `User:${props.user}`,
-            fragment: gql`
-            fragment TaskUpdate on User {
-              currentTasks
+        update: (cache, { data: { createTask: task } }) => {
+            const cachedData: { User: UserConfig } | null = cache.readQuery({
+                query: GET_TASKS_QUERY,
+                variables: {
+                    id: props.user,
+                },
+            });
+            if (cachedData === null) {
+                return;
             }
-            `,
-            data:{
-              currentTasks: [...User.currentTasks, {...task, tips: []}]
-            }
-          });
-        }
+            const { User } = cachedData;
+            cache.writeFragment({
+                id: `User:${props.user}`,
+                fragment: gql`
+                    fragment TaskUpdate on User {
+                        currentTasks
+                    }
+                `,
+                data: {
+                    currentTasks: [...User.currentTasks, { ...task, tips: [] }],
+                },
+            });
+        },
     });
     const [findTasks, findTasksRes] = useLazyQuery(SEARCH_TASKS_QUERY, {
         fetchPolicy: 'no-cache',
     });
     const tasks: [TaskConfig] = findTasksRes?.data?.results ? findTasksRes?.data.results : [];
     const debouncedFindTasks = debounce(findTasks, 200);
-    function getDuplicateTask(list, input): false|TaskConfig{
-      const dupes = list.filter(el=>el.body.split(' ').join('').toLowerCase() == input.split(' ').join('').toLowerCase());
-      if(dupes.length === 0){
-        return false;
-      }
+    function getDuplicateTask(list, input): false | TaskConfig {
+        const dupes = list.filter(
+            (el) => el.body.split(' ').join('').toLowerCase() == input.split(' ').join('').toLowerCase(),
+        );
+        if (dupes.length === 0) {
+            return false;
+        }
         return dupes[0];
     }
     const {
@@ -105,16 +109,16 @@ export const AddTask = (props: { user: string }) : ReactElement => {
     } = useCombobox({
         items: tasks,
         itemToString: (item: TaskConfig | null) => item.body,
-        onStateChange: ({inputValue, type,...val}) => {
-            if (type =='__input_change__' && inputValue || inputValue == '') {
-              const dupe = getDuplicateTask(tasks, inputValue);
-              if(dupe){
-                setSelectedTask(dupe);
-                debouncedFindTasks({
-                  variables: { searchString: inputValue },
-               });
-                return;
-              }
+        onStateChange: ({ inputValue, type, ...val }) => {
+            if ((type == '__input_change__' && inputValue) || inputValue == '') {
+                const dupe = getDuplicateTask(tasks, inputValue);
+                if (dupe) {
+                    setSelectedTask(dupe);
+                    debouncedFindTasks({
+                        variables: { searchString: inputValue },
+                    });
+                    return;
+                }
                 setSelectedTask({ body: inputValue, isNew: true });
                 if (inputValue.length > 2) {
                     debouncedFindTasks({
@@ -124,17 +128,17 @@ export const AddTask = (props: { user: string }) : ReactElement => {
             }
         },
         onSelectedItemChange: ({ selectedItem: item }) => {
-          console.log('running selected')
+            console.log('running selected');
             if (item) {
                 setSelectedTask(item);
             }
         },
     });
-    async function handleSubmit(e):Promise<void>{
-      e.preventDefault();
-        const res = await (isNewTask(selectedTask)? createTask() : addTask());
+    async function handleSubmit(e): Promise<void> {
+        e.preventDefault();
+        const res = await (isNewTask(selectedTask) ? createTask() : addTask());
         setSelectedTask({ body: '' });
-    };
+    }
     return (
         <AddTaskStyle>
             <label {...getLabelProps()}>Add a new task</label>
@@ -147,7 +151,9 @@ export const AddTask = (props: { user: string }) : ReactElement => {
         >
           &#8595;
         </button> */}
-                <button type="submit" onClick={handleSubmit}>Add</button>
+                <button type="submit" onClick={handleSubmit}>
+                    Add
+                </button>
             </div>
             <ul {...getMenuProps()}>
                 {isOpen &&
