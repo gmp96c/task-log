@@ -11,6 +11,7 @@ export interface TaskConfig {
     readonly id: string;
     readonly body: string;
     tips: TipConfig[];
+    [key: string]: any;
 }
 
 export interface UserConfig {

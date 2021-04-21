@@ -1,10 +1,9 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
-import { useMutation, gql, MutationResult } from '@apollo/client';
+import { useMutation, gql, MutationUpdaterFn } from '@apollo/client';
 import Loader from 'react-loader-spinner';
-import { TaskConfig, TipConfig, UserConfig } from '../Types';
-import { UserContext } from '../App';
-import { GET_TASKS_QUERY } from './Tasks';
+import { TaskConfig, TipConfig } from '../Types';
+import { UserContext } from '../util/UserContextWrapper';
 
 interface TipProps {
     tip: TipConfig;
@@ -29,32 +28,38 @@ const TIP_CONNECT_MUTATION = gql`
     }
 `;
 export const Tip: React.FC<TipProps> = ({ tip, active, task }: TipProps) => {
-    const tipCacheUpdater = (cache, { data }) => {
-        cache.modify({
-            id: cache.identify(task),
-            fields: {
-                tips(existingTipRefs, { readField }) {
-                    if (active) {
-                        return existingTipRefs.filter((tipRef) => tip.id !== readField('id', tipRef));
-                    }
-                    const newTipRef = cache.writeFragment({
-                        data: tip,
-                        fragment: gql`
-                            fragment NewTip on Tips {
-                                id
-                                body
-                            }
-                        `,
-                    });
-                    if (existingTipRefs.some((ref) => readField('id', ref) === tip.id)) {
-                        return existingTipRefs;
-                    }
-                    return [...existingTipRefs, newTipRef];
-                },
-            },
-        });
-    };
     const user = useContext(UserContext);
+    console.log(user);
+
+    const tipCacheUpdater: MutationUpdaterFn<void> = (cache, { data }) => {
+        try {
+            cache.modify({
+                id: cache.identify(task),
+                fields: {
+                    tips(existingTipRefs, { readField }) {
+                        if (active) {
+                            return existingTipRefs.filter((tipRef) => tip.id !== readField('id', tipRef));
+                        }
+                        const newTipRef = cache.writeFragment({
+                            data: tip,
+                            fragment: gql`
+                                fragment NewTip on Tips {
+                                    id
+                                    body
+                                }
+                            `,
+                        });
+                        if (existingTipRefs.some((ref) => readField('id', ref) === tip.id)) {
+                            return existingTipRefs;
+                        }
+                        return [...existingTipRefs, newTipRef];
+                    },
+                },
+            });
+        } catch (err) {
+            console.error(err);
+        }
+    };
     const [disconnectTip, disconnectTipRes] = useMutation(TIP_DISCONNECT_MUTATION, {
         variables: {
             tipId: tip.id,

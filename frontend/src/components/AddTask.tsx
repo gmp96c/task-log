@@ -1,12 +1,13 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { TextField } from '@material-ui/core';
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useState, useContext } from 'react';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useCombobox } from 'downshift';
 import debounce from 'lodash.debounce';
 import styled from 'styled-components';
 import { TaskConfig, UserConfig } from '../Types';
 import { GET_TASKS_QUERY } from './Tasks';
+import { UserContext } from '../util/UserContextWrapper';
 
 const CREATE_TASK_MUTATION = gql`
     mutation CREATE_TASK_MUTATION($body: String!) {
@@ -44,14 +45,15 @@ const SEARCH_TASKS_QUERY = gql`
 function isNewTask(selectedTask: TaskConfig | NewTaskConfig): selectedTask is NewTaskConfig {
     return (selectedTask as TaskConfig).id === undefined;
 }
-export const AddTask = (props: { user: string }): ReactElement => {
+export const AddTask = (): ReactElement => {
     const [selectedTask, setSelectedTask] = useState<TaskConfig | NewTaskConfig>({
         body: '',
     });
+    const user = useContext(UserContext);
     const [addTask, addTaskRes] = useMutation(ADD_TASK_MUTATION, {
         variables: {
             taskId: selectedTask.id,
-            userId: props.user,
+            userId: user?.id,
         },
     });
     const [createTask, createTaskRes] = useMutation(CREATE_TASK_MUTATION, {
@@ -62,24 +64,26 @@ export const AddTask = (props: { user: string }): ReactElement => {
             const cachedData: { User: UserConfig } | null = cache.readQuery({
                 query: GET_TASKS_QUERY,
                 variables: {
-                    id: props.user,
+                    id: user?.id,
                 },
             });
             if (cachedData === null) {
                 return;
             }
             const { User } = cachedData;
-            cache.writeFragment({
-                id: `User:${props.user}`,
-                fragment: gql`
-                    fragment TaskUpdate on User {
-                        currentTasks
-                    }
-                `,
-                data: {
-                    currentTasks: [...User.currentTasks, { ...task, tips: [] }],
-                },
-            });
+            if (Array.isArray(User.currentTasks)) {
+                cache.writeFragment({
+                    id: `User:${user?.id}`,
+                    fragment: gql`
+                        fragment TaskUpdate on User {
+                            currentTasks
+                        }
+                    `,
+                    data: {
+                        currentTasks: [...User.currentTasks, { ...task, tips: [] }],
+                    },
+                });
+            }
         },
     });
     const [findTasks, findTasksRes] = useLazyQuery(SEARCH_TASKS_QUERY, {
@@ -119,7 +123,7 @@ export const AddTask = (props: { user: string }): ReactElement => {
                     });
                     return;
                 }
-                setSelectedTask({ body: inputValue, isNew: true });
+                setSelectedTask({ body: inputValue });
                 if (inputValue.length > 2) {
                     debouncedFindTasks({
                         variables: { searchString: inputValue },

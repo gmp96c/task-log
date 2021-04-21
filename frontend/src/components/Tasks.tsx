@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { ReactElement, useState, useContext, useEffect } from 'react';
 import styled from 'styled-components';
 import { useQuery, gql } from '@apollo/client';
 import { TaskConfig, UserConfig } from '../Types';
 import { Task } from './Task';
+import { UserContext } from '../util/UserContextWrapper';
 
 export const GET_TASKS_QUERY = gql`
     query GET_TASKS($id: ID!) {
@@ -20,19 +21,14 @@ export const GET_TASKS_QUERY = gql`
         }
     }
 `;
-interface TsProps {
-    user: string;
-}
-export const Tasks: React.FC<TsProps> = ({ user }: TsProps) => {
+export const Tasks = (): ReactElement => {
+    const user = useContext(UserContext);
+    console.log(user);
     const { loading, data } = useQuery<{ User: UserConfig }>(GET_TASKS_QUERY, {
-        variables: { id: user },
+        variables: { id: user?.id },
     });
     const [focused, setFocused] = useState<string | null>(null);
-    // just for testing
-    useEffect(() => {
-        console.log(data);
-    }, [data]);
-    if (loading || data === undefined) {
+    if (loading || data?.User?.currentTasks === undefined) {
         return <h2>loading</h2>;
     }
     return (
@@ -41,7 +37,6 @@ export const Tasks: React.FC<TsProps> = ({ user }: TsProps) => {
                 <Task
                     key={task.id}
                     task={task}
-                    userId={user}
                     setFocused={(focusing = true): void => {
                         if (focusing) {
                             setFocused(task.id);

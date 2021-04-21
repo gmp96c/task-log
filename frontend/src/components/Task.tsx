@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -14,10 +14,10 @@ import { useAuth } from '../hooks/useAuth';
 import { TaskConfig, TipConfig, ModeType } from '../Types';
 // eslint-disable-next-line import/no-cycle
 import { Tips } from './Tips';
+import { UserContext } from '../util/UserContextWrapper';
 
 interface TaskProps {
     task: TaskConfig;
-    userId: string;
     setFocused: {
         (focused?: boolean): void;
     };
@@ -44,11 +44,12 @@ const REMOVE_TASK_MUTATION = gql`
         }
     }
 `;
-export const Task: React.FC<TaskProps> = ({ task, userId, setFocused, unfocused }: TaskProps) => {
+export const Task: React.FC<TaskProps> = ({ task, setFocused, unfocused }: TaskProps) => {
+    const user = useContext(UserContext);
     const [removeTask, removeTaskRes] = useMutation(REMOVE_TASK_MUTATION, {
         variables: {
             taskId: task.id,
-            userId,
+            userId: user?.id,
         },
     });
     const [confirmOpen, setConfirmOpen] = useState(false);
@@ -106,8 +107,8 @@ export const Task: React.FC<TaskProps> = ({ task, userId, setFocused, unfocused 
                 <DialogTitle id="alert-dialog-title">Remove task?</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        Are you sure you would like to remove "{`${task.body}`}" from your tasks? Your logs will still
-                        be saved and accessible.
+                        Are you sure you would like to remove &quot;{`${task.body}`}&quot; from your tasks? Your logs
+                        will still be saved and accessible.
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>

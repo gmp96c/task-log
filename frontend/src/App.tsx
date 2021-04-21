@@ -7,10 +7,9 @@ import Layout from './components/Layout';
 import { AddTask } from './components/AddTask';
 import { Tasks } from './components/Tasks';
 import { UserConfig } from './Types';
+import { UserContextWrapper } from './util/UserContextWrapper';
 
-export const UserContext = React.createContext<undefined | UserConfig>(undefined);
-
-export const App = () => {
+export const App: React.FC = () => {
     const { userLoading, isAuth, userData } = useAuth();
     if (userLoading) {
         return <h1>loading</h1>;
@@ -19,10 +18,10 @@ export const App = () => {
         <Layout>
             {isAuth ? (
                 <MainWrapper>
-                    <UserContext.Provider value={userData?.authenticatedUser}>
-                        <AddTask user={userData?.authenticatedUser?.id} />
-                        <Tasks user={userData?.authenticatedUser?.id} />
-                    </UserContext.Provider>
+                    <UserContextWrapper value={userData?.authenticatedUser}>
+                        <AddTask />
+                        <Tasks />
+                    </UserContextWrapper>
                 </MainWrapper>
             ) : (
                 <Login />

@@ -44,7 +44,6 @@ export const TipDialog: React.FC<TipDialogConfig> = ({ tipOpen, setTipOpen, task
     if (loading || data === undefined) {
         return <></>;
     }
-    console.log(data);
     return (
         <DialogStyled
             open={tipOpen}
