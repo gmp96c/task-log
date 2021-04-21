@@ -50,7 +50,21 @@ module.exports = {
     // List-level access controls
     access: {
         read: access.userExists,
-        update: access.userIsAdmin,
+        update: (props) => {
+            const user = props.authentication.item;
+            console.log(user);
+            const targetId =
+                props.originalInput?.pinnedBy?.connect?.id ||
+                props.originalInput?.pinnedBy?.disconnect?.id;
+            console.log(
+                `conenct ${props.originalInput?.pinnedBy?.connect?.id}`,
+                `disconenct ${props.originalInput?.pinnedBy?.disconnect?.id}`
+            );
+            console.log(targetId);
+            console.log(user.id === targetId);
+            console.log('dddddddddddddd');
+            return access.userIsAdmin(props);
+        },
         create: access.userExists,
         delete: access.userIsAdminOrOwner,
     },
