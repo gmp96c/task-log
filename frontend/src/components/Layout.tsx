@@ -1,4 +1,3 @@
-
 import { gql, useMutation } from '@apollo/client';
 import { Button } from '@material-ui/core';
 import React from 'react';
@@ -13,7 +12,6 @@ const SIGNOUT_MUTATION = gql`
         }
     }
 `;
-
 
 export default function Layout({ children }) {
     const [doLogout, { loading: mutationLoading, error: mutationError }] = useMutation(SIGNOUT_MUTATION, {
@@ -37,7 +35,7 @@ export default function Layout({ children }) {
         <MainLayout>
             <header>
                 <h3>Daily Log</h3>
-                {userData.authenticatedUser !== null && (
+                {userData?.authenticatedUser && (
                     <>
                         {/* <UserInfo info={userData} /> */}
                         <h4>Demouser7</h4>

@@ -16,6 +16,9 @@ export const GET_TASKS_QUERY = gql`
                 tips(where: { pinnedBy_some: { id: $id } }) {
                     id
                     body
+                    _pinnedByMeta {
+                        count
+                    }
                 }
             }
         }

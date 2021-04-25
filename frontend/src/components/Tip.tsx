@@ -46,6 +46,9 @@ export const Tip: React.FC<TipProps> = ({ tip, active, task }: TipProps) => {
                                 fragment NewTip on Tips {
                                     id
                                     body
+                                    _pinnedByMeta {
+                                        count
+                                    }
                                 }
                             `,
                         });

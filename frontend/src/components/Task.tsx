@@ -39,6 +39,9 @@ const REMOVE_TASK_MUTATION = gql`
                 tips(where: { pinnedBy_some: { id: $userId } }) {
                     id
                     body
+                    _pinnedByMeta {
+                        count
+                    }
                 }
             }
         }

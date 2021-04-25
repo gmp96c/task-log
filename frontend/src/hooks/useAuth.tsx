@@ -12,8 +12,14 @@ const CURRENT_USER_QUERY = gql`
         }
     }
 `;
+interface useAuthConfig {
+    userLoading: boolean;
+    userData: { authenticatedUser: UserConfig } | undefined;
+    isAuth: boolean;
+    id: string | undefined;
+}
 
-function useAuth() {
+function useAuth(): useAuthConfig {
     const { loading, data } = useQuery<{ authenticatedUser: UserConfig }>(CURRENT_USER_QUERY);
     const [isAuth, setAuth] = useState(false);
     const [id, setId] = useState<string | undefined>();

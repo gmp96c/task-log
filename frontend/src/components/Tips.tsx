@@ -13,9 +13,11 @@ export const Tips: React.FC<TipProps> = ({ task, mode }: TipProps) => {
         <TipStyle className="tipContainer">
             <header>{!!(task.tips.length > 0 || mode !== 'Base') && <h5>Tips</h5>}</header>
             <ul>
-                {task.tips.map((tip: TipConfig) => (
-                    <li key={tip.id}>{tip.body}</li>
-                ))}
+                {[...task.tips]
+                    .sort((a, b) => (a._pinnedByMeta.count > b._pinnedByMeta.count ? 1 : -1))
+                    .map((tip: TipConfig) => (
+                        <li key={tip.id}>{tip.body}</li>
+                    ))}
             </ul>
             {mode === 'Settings' && (
                 <button

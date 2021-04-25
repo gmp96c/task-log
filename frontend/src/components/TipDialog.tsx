@@ -21,7 +21,9 @@ export const GET_TIPS = gql`
                     id
                     name
                 }
-                pinnedByCount
+                _pinnedByMeta {
+                    count
+                }
             }
         }
     }
@@ -36,6 +38,7 @@ export const TipDialog: React.FC<TipDialogConfig> = ({ tipOpen, setTipOpen, task
     const { loading, data, refetch } = useQuery<{ Task: TaskConfig }>(GET_TIPS, {
         variables: { id: task.id },
     });
+    console.log(data);
     useEffect(() => {
         if (tipOpen) {
             refetch();
@@ -64,14 +67,16 @@ export const TipDialog: React.FC<TipDialogConfig> = ({ tipOpen, setTipOpen, task
                     />
                 ) : (
                     <>
-                        {data.Task.tips.map((tip: TipConfig) => (
-                            <Tip
-                                key={tip.id}
-                                tip={tip}
-                                active={!!selected.map((el) => el.id).includes(tip.id)}
-                                task={task}
-                            />
-                        ))}
+                        {[...data.Task.tips]
+                            .sort((a, b) => (a._pinnedByMeta.count > b._pinnedByMeta.count ? 1 : -1))
+                            .map((tip: TipConfig) => (
+                                <Tip
+                                    key={tip.id}
+                                    tip={tip}
+                                    active={!!selected.map((el) => el.id).includes(tip.id)}
+                                    task={task}
+                                />
+                            ))}
                     </>
                 )}
             </DialogContent>

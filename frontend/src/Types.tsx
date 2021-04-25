@@ -2,7 +2,9 @@ export interface TipConfig {
     readonly __typename: 'Tip';
     readonly id: string;
     readonly body: string;
-    readonly pinnedByCount: number;
+    _pinnedByMeta: {
+        count: number;
+    };
     pinnedBy?: [UserConfig];
 }
 
