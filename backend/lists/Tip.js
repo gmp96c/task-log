@@ -41,51 +41,26 @@ module.exports = {
             ref: 'User.pinnedTips',
             many: true,
         },
-        pinnedByCount: {
-            type: Integer,
-            defaultValue: 1,
-        },
     },
     labelResolver: (item) => item.body,
     // List-level access controls
     access: {
         read: access.userExists,
         update: (props) => {
-            const user = props.authentication.item;
-            console.log(user);
-            const targetId =
-                props.originalInput?.pinnedBy?.connect?.id ||
-                props.originalInput?.pinnedBy?.disconnect?.id;
-            console.log(
-                `conenct ${props.originalInput?.pinnedBy?.connect?.id}`,
-                `disconenct ${props.originalInput?.pinnedBy?.disconnect?.id}`
-            );
-            console.log(targetId);
-            console.log(user.id === targetId);
-            console.log('dddddddddddddd');
-            return access.userIsAdmin(props);
+            try {
+                // If the target of the update is connecting/disconnecting a relationship with the current user it permits it, otherwise it does not.
+                const user = props.authentication.item;
+                const target =
+                    props.originalInput?.pinnedBy?.connect ||
+                    props.originalInput?.pinnedBy?.disconnect;
+                const targetId = target[0].id;
+                return user.id === targetId || access.userIsAdmin(props);
+            } catch (err) {
+                console.log(`err ${err}`);
+                return false;
+            }
         },
         create: access.userExists,
         delete: access.userIsAdminOrOwner,
-    },
-    hooks: {
-        afterChange: async ({
-            operation,
-            context,
-            existingItem,
-            updatedItem,
-        }) => {
-            // throw new Error(operation, existingItem,  updatedItem);
-            if (operation === 'update') {
-                // const updatedUser = await updateItem({
-                //   keystone,
-                //   listKey: 'User',
-                //   item: {
-                //     id: context.authedItem.id,
-                //     data: { currentTasks: { connect: [{ id: updatedItem.id }] } },
-                //   },
-                // });
-            }
-        },
     },
 };
