@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import React, { useState, useEffect, Dispatch, SetStateAction, useContext } from 'react';
 import Button from '@material-ui/core/Button';
 import styled from 'styled-components';
 import Dialog from '@material-ui/core/Dialog';
@@ -6,28 +6,22 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { useQuery, gql } from '@apollo/client';
+import Paper from '@material-ui/core/Paper';
+import InputBase from '@material-ui/core/InputBase';
+import Divider from '@material-ui/core/Divider';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
+import SearchIcon from '@material-ui/icons/Search';
+import DirectionsIcon from '@material-ui/icons/Directions';
+import { useQuery, gql, useMutation } from '@apollo/client';
 import Loader from 'react-loader-spinner';
+import AddIcon from '@material-ui/icons/Add';
 import { TipConfig, TaskConfig } from '../Types';
 import { Tip } from './Tip';
+import { UserContext } from '../util/UserContextWrapper';
+import { AddTip } from './AddTip';
+import { GET_TIPS } from '../util/Queries';
 
-export const GET_TIPS = gql`
-    query GET_TIPS($id: ID!) {
-        Task(where: { id: $id }) {
-            tips {
-                body
-                id
-                pinnedBy {
-                    id
-                    name
-                }
-                _pinnedByMeta {
-                    count
-                }
-            }
-        }
-    }
-`;
 interface TipDialogConfig {
     tipOpen: boolean;
     setTipOpen: Dispatch<SetStateAction<boolean>>;
@@ -38,7 +32,7 @@ export const TipDialog: React.FC<TipDialogConfig> = ({ tipOpen, setTipOpen, task
     const { loading, data, refetch } = useQuery<{ Task: TaskConfig }>(GET_TIPS, {
         variables: { id: task.id },
     });
-    console.log(data);
+
     useEffect(() => {
         if (tipOpen) {
             refetch();
@@ -54,9 +48,12 @@ export const TipDialog: React.FC<TipDialogConfig> = ({ tipOpen, setTipOpen, task
                 setTipOpen(false);
             }}
             aria-labelledby="form-dialog-title"
+            fullWidth
+            maxWidth="sm"
         >
             <DialogTitle className="form-dialog-title">Tips</DialogTitle>
             <DialogContent>
+                <AddTip task={task} tips={data.Task.tips} />
                 {loading ? (
                     <Loader
                         type="Puff"
@@ -102,4 +99,11 @@ export const TipDialog: React.FC<TipDialogConfig> = ({ tipOpen, setTipOpen, task
     );
 };
 
-const DialogStyled = styled(Dialog)``;
+const DialogStyled = styled(Dialog)`
+    Paper {
+        display: flex;
+        InputBase {
+            flex-grow: 1;
+        }
+    }
+`;

@@ -4,26 +4,8 @@ import { useQuery, gql } from '@apollo/client';
 import { TaskConfig, UserConfig } from '../Types';
 import { Task } from './Task';
 import { UserContext } from '../util/UserContextWrapper';
+import { GET_TASKS_QUERY } from '../util/Queries';
 
-export const GET_TASKS_QUERY = gql`
-    query GET_TASKS($id: ID!) {
-        User(where: { id: $id }) {
-            id
-            name
-            currentTasks {
-                id
-                body
-                tips(where: { pinnedBy_some: { id: $id } }) {
-                    id
-                    body
-                    _pinnedByMeta {
-                        count
-                    }
-                }
-            }
-        }
-    }
-`;
 export const Tasks = (): ReactElement => {
     const user = useContext(UserContext);
     console.log(user);

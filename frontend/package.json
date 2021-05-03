@@ -12,10 +12,11 @@
     "downshift": "^6.0.10",
     "graphql": "^15.4.0",
     "lodash.debounce": "^4.0.8",
+    "material-ui": "^0.20.2",
     "normalize.css": "^8.0.1",
     "parcel": "^1.12.4",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
+    "react": "^15.4.0 || ^16.0.0",
+    "react-dom": "^15.4.0 || ^16.0.0",
     "react-loader-spinner": "^4.0.0",
     "styled-components": "^5.2.1"
   },
