@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import { gql, useMutation } from '@apollo/client';
 import AddIcon from '@material-ui/icons/Add';
-import { TaskConfig, UserConfig } from '../Types';
+import { TaskConfig, TipConfig, UserConfig } from '../Types';
 import { UserContext } from '../util/UserContextWrapper';
 import { GET_TASKS_QUERY, GET_TIPS } from '../util/Queries';
 
@@ -36,49 +36,44 @@ export const AddTip: React.FC<AddTipConfig> = ({ task, tips }) => {
             taskId: task.id,
             userId: user?.id,
         },
-        update: (cache, { data: { addTip: tip } }) => {
-            // Edit cache on task view for tips, this works.
-            const cachedData: { User: UserConfig } | null = cache.readQuery({
-                query: GET_TASKS_QUERY,
-                variables: {
-                    id: user?.id,
-                },
-            });
-            if (cachedData === null) {
-                return;
-            }
-            const { User } = cachedData;
-            if (Array.isArray(User.currentTasks)) {
-                cache.writeFragment({
-                    id: `User:${user?.id}`,
-                    fragment: gql`
-                        fragment TaskUpdate on User {
-                            currentTasks
-                        }
-                    `,
-                    data: {
-                        currentTasks: [
-                            ...User.currentTasks.filter((taskItem) => taskItem.id !== task.id),
-                            { ...task, tips: [...task.tips, tip] },
-                        ],
+        update: (cache, { data: { createTip: tip } }) => {
+            try {
+                cache.modify({
+                    id: cache.identify(task),
+                    fields: {
+                        tips(existingTipRefs, { readField, storeFieldName }) {
+                            const newTipRef = cache.writeFragment({
+                                data: tip,
+                                fragment: gql`
+                                    fragment NewTip on Tips {
+                                        id
+                                        body
+                                        _pinnedByMeta {
+                                            count
+                                        }
+                                    }
+                                `,
+                            });
+                            if (existingTipRefs.some((ref) => readField('id', ref) === tip.id)) {
+                                return existingTipRefs;
+                            }
+                            return [...existingTipRefs, newTipRef];
+                        },
                     },
                 });
+            } catch (err) {
+                console.log(err);
             }
-            // TODO: edit cache on TipDialog tip display, in progress
-            cache.writeQuery({
-                query: GET_TIPS,
-                data: {
-                    task: { tips: [...tips, tip] },
-                    variables: {
-                        id: task.id,
-                    },
-                },
-            });
         },
     });
     function handleSubmit(e): void {
+        if (taskInput.length < 3) {
+            // add error message for bad task names
+        }
         e.preventDefault();
-        addTip();
+        addTip().then(() => {
+            setTaskInput('');
+        });
     }
     return (
         <div>

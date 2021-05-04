@@ -27,35 +27,40 @@ const TIP_CONNECT_MUTATION = gql`
         }
     }
 `;
+
 export const Tip: React.FC<TipProps> = ({ tip, active, task }: TipProps) => {
     const user = useContext(UserContext);
-    console.log(user);
-
     const tipCacheUpdater: MutationUpdaterFn<void> = (cache, { data }) => {
         try {
             cache.modify({
                 id: cache.identify(task),
                 fields: {
-                    tips(existingTipRefs, { readField }) {
-                        if (active) {
-                            return existingTipRefs.filter((tipRef) => tip.id !== readField('id', tipRef));
-                        }
-                        const newTipRef = cache.writeFragment({
-                            data: tip,
-                            fragment: gql`
-                                fragment NewTip on Tips {
-                                    id
-                                    body
-                                    _pinnedByMeta {
-                                        count
+                    tips(existingTipRefs, { readField, storeFieldName }) {
+                        if (storeFieldName.includes('where')) {
+                            // for currently selected tips
+                            if (active) {
+                                return existingTipRefs.filter((tipRef) => {
+                                    return tip.id !== readField('id', tipRef);
+                                });
+                            }
+                            const newTipRef = cache.writeFragment({
+                                data: tip,
+                                fragment: gql`
+                                    fragment NewTip on Tips {
+                                        id
+                                        body
+                                        _pinnedByMeta {
+                                            count
+                                        }
                                     }
-                                }
-                            `,
-                        });
-                        if (existingTipRefs.some((ref) => readField('id', ref) === tip.id)) {
-                            return existingTipRefs;
+                                `,
+                            });
+                            if (existingTipRefs.some((ref) => readField('id', ref) === tip.id)) {
+                                return existingTipRefs;
+                            }
+                            return [...existingTipRefs, newTipRef];
                         }
-                        return [...existingTipRefs, newTipRef];
+                        return existingTipRefs;
                     },
                 },
             });
@@ -68,14 +73,20 @@ export const Tip: React.FC<TipProps> = ({ tip, active, task }: TipProps) => {
             tipId: tip.id,
             userId: user?.id,
         },
-        update: tipCacheUpdater,
+        update: (cache, { data }) => {
+            console.log('ran in dis');
+            tipCacheUpdater(cache, { data });
+        },
     });
     const [connectTip, connectTipRes] = useMutation(TIP_CONNECT_MUTATION, {
         variables: {
             tipId: tip.id,
             userId: user?.id,
         },
-        update: tipCacheUpdater,
+        update: (cache, { data }) => {
+            console.log('ran in con');
+            tipCacheUpdater(cache, { data });
+        },
     });
     function handleTipToggle(): void {
         if (active) {
