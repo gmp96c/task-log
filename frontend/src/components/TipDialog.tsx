@@ -21,6 +21,7 @@ import { Tip } from './Tip';
 import { UserContext } from '../util/UserContextWrapper';
 import { AddTip } from './AddTip';
 import { GET_TIPS } from '../util/Queries';
+import { useSearch } from '../hooks/useSearch';
 
 interface TipDialogConfig {
     tipOpen: boolean;
@@ -32,15 +33,19 @@ export const TipDialog: React.FC<TipDialogConfig> = ({ tipOpen, setTipOpen, task
     const { loading, data, refetch } = useQuery<{ Task: TaskConfig }>(GET_TIPS, {
         variables: { id: task.id },
     });
-
+    const [tipInput, setTipInput] = useState<string>('');
+    const processedData = useSearch<TipConfig>({
+        data: data ? [...data.Task.tips] : [],
+        keys: ['body'],
+        query: tipInput,
+        sorter: (el: TipConfig[]): TipConfig[] =>
+            el.sort((a, b) => (a._pinnedByMeta.count > b._pinnedByMeta.count ? 1 : -1)),
+    });
     useEffect(() => {
         if (tipOpen) {
             refetch();
         }
     }, [tipOpen]);
-    if (loading || data === undefined) {
-        return <></>;
-    }
     return (
         <DialogStyled
             open={tipOpen}
@@ -53,7 +58,7 @@ export const TipDialog: React.FC<TipDialogConfig> = ({ tipOpen, setTipOpen, task
         >
             <DialogTitle className="form-dialog-title">Tips</DialogTitle>
             <DialogContent>
-                <AddTip task={task} tips={data.Task.tips} />
+                <AddTip task={task} tipInput={tipInput} setTipInput={setTipInput} />
                 {loading ? (
                     <Loader
                         type="Puff"
@@ -64,16 +69,14 @@ export const TipDialog: React.FC<TipDialogConfig> = ({ tipOpen, setTipOpen, task
                     />
                 ) : (
                     <>
-                        {[...data.Task.tips]
-                            .sort((a, b) => (a._pinnedByMeta.count > b._pinnedByMeta.count ? 1 : -1))
-                            .map((tip: TipConfig) => (
-                                <Tip
-                                    key={tip.id}
-                                    tip={tip}
-                                    active={!!selected.map((el) => el.id).includes(tip.id)}
-                                    task={task}
-                                />
-                            ))}
+                        {processedData.map((tip: TipConfig) => (
+                            <Tip
+                                key={tip.id}
+                                tip={tip}
+                                active={!!selected.map((el) => el.id).includes(tip.id)}
+                                task={task}
+                            />
+                        ))}
                     </>
                 )}
             </DialogContent>
