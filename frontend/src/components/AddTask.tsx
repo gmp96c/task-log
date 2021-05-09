@@ -6,7 +6,7 @@ import { useCombobox } from 'downshift';
 import debounce from 'lodash.debounce';
 import styled from 'styled-components';
 import { TaskConfig, UserConfig } from '../Types';
-import { GET_TASKS_QUERY } from './Tasks';
+import { GET_TASKS_QUERY } from '../util/Queries';
 import { UserContext } from '../util/UserContextWrapper';
 
 const CREATE_TASK_MUTATION = gql`
@@ -114,7 +114,7 @@ export const AddTask = (): ReactElement => {
         items: tasks,
         itemToString: (item: TaskConfig | null) => item.body,
         onStateChange: ({ inputValue, type, ...val }) => {
-            if ((type == '__input_change__' && inputValue) || inputValue == '') {
+            if ((type == '__input_change__' && inputValue) || inputValue === '') {
                 const dupe = getDuplicateTask(tasks, inputValue);
                 if (dupe) {
                     setSelectedTask(dupe);
