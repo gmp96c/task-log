@@ -19,6 +19,7 @@ const CREATE_TASK_MUTATION = gql`
 `;
 interface NewTaskConfig {
     body: string;
+    id: 'new';
 }
 
 const ADD_TASK_MUTATION = gql`
@@ -48,9 +49,10 @@ function isNewTask(selectedTask: TaskConfig | NewTaskConfig): selectedTask is Ne
 export const AddTask = (): ReactElement => {
     const [selectedTask, setSelectedTask] = useState<TaskConfig | NewTaskConfig>({
         body: '',
+        id: 'new',
     });
     const user = useContext(UserContext);
-    const [addTask, addTaskRes] = useMutation(ADD_TASK_MUTATION, {
+    const [addTask, addTaskRes] = useMutation<TaskConfig>(ADD_TASK_MUTATION, {
         variables: {
             taskId: selectedTask.id,
             userId: user?.id,
@@ -93,7 +95,7 @@ export const AddTask = (): ReactElement => {
     const debouncedFindTasks = debounce(findTasks, 200);
     function getDuplicateTask(list, input): false | TaskConfig {
         const dupes = list.filter(
-            (el) => el.body.split(' ').join('').toLowerCase() == input.split(' ').join('').toLowerCase(),
+            (el) => el.body.split(' ').join('').toLowerCase() === input.split(' ').join('').toLowerCase(),
         );
         if (dupes.length === 0) {
             return false;
@@ -112,9 +114,9 @@ export const AddTask = (): ReactElement => {
         getItemProps,
     } = useCombobox({
         items: tasks,
-        itemToString: (item: TaskConfig | null) => item.body,
+        itemToString: (item: TaskConfig | null) => item?.body || '',
         onStateChange: ({ inputValue, type, ...val }) => {
-            if ((type == '__input_change__' && inputValue) || inputValue === '') {
+            if ((type === '__input_change__' && inputValue) || inputValue === '') {
                 const dupe = getDuplicateTask(tasks, inputValue);
                 if (dupe) {
                     setSelectedTask(dupe);
@@ -123,7 +125,7 @@ export const AddTask = (): ReactElement => {
                     });
                     return;
                 }
-                setSelectedTask({ body: inputValue });
+                setSelectedTask({ body: inputValue, id: 'new' });
                 if (inputValue.length > 2) {
                     debouncedFindTasks({
                         variables: { searchString: inputValue },
@@ -141,7 +143,7 @@ export const AddTask = (): ReactElement => {
     async function handleSubmit(e): Promise<void> {
         e.preventDefault();
         const res = await (isNewTask(selectedTask) ? createTask() : addTask());
-        setSelectedTask({ body: '' });
+        setSelectedTask({ body: '', id: 'new' });
     }
     return (
         <AddTaskStyle>

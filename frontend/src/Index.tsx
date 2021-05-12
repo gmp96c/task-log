@@ -1,21 +1,14 @@
 import * as React from 'react';
 import ReactDOM from 'react-dom';
-import { ApolloProvider, ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
+import 'cross-fetch/polyfill';
 import { setContext } from '@apollo/client/link/context';
+import { ApolloProvider, ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
 import { App } from './App';
 import 'normalize.css';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
+import { client } from './Client';
 
-const link = createHttpLink({
-    uri: process.env.KEYSTONE_URI,
-    credentials: 'include',
-});
-
-export const client = new ApolloClient({
-    link,
-    cache: new InMemoryCache(),
-});
-export const Index = () => (
+const Index = () => (
     <ApolloProvider client={client}>
         <App />
     </ApolloProvider>

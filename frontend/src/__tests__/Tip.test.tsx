@@ -4,7 +4,7 @@ import faker from 'faker';
 import { ApolloProvider } from '@apollo/client';
 import { Tip } from '../components/Tip';
 import { TaskConfig, TipConfig } from '../Types';
-import { client } from '../Index';
+import { client } from '../Client';
 
 function randomTip(): TipConfig {
     return {
@@ -31,5 +31,5 @@ test('loads and displays tip', async () => {
             <Tip tip={testTip} active task={randomTask(testTip)} />{' '}
         </ApolloProvider>,
     );
-    expect(element.baseElement.innerHTML).toEqual(testTip.body);
+    expect(element.baseElement.innerHTML).toContain(testTip.body);
 });
