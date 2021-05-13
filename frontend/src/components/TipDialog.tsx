@@ -39,7 +39,7 @@ export const TipDialog: React.FC<TipDialogConfig> = ({ tipOpen, setTipOpen, task
         keys: ['body'],
         query: tipInput,
         sorter: (el: TipConfig[]): TipConfig[] =>
-            el.sort((a, b) => (a._pinnedByMeta.count > b._pinnedByMeta.count ? 1 : -1)),
+            el.sort((a, b) => (a._pinnedByMeta.count < b._pinnedByMeta.count ? 1 : -1)),
     });
     useEffect(() => {
         if (tipOpen) {
@@ -81,11 +81,12 @@ export const TipDialog: React.FC<TipDialogConfig> = ({ tipOpen, setTipOpen, task
                 )}
             </DialogContent>
             <DialogActions>
+
                 <Button
                     onClick={() => {
                         setTipOpen(false);
                     }}
-                    color="primary"
+                    color=  "primary"
                 >
                     Cancel
                 </Button>

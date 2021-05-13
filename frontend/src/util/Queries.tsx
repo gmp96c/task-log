@@ -27,10 +27,6 @@ export const GET_TIPS = gql`
             tips {
                 body
                 id
-                pinnedBy {
-                    id
-                    name
-                }
                 _pinnedByMeta {
                     count
                 }

@@ -4,6 +4,7 @@ export interface TipConfig {
     readonly body: string;
     _pinnedByMeta: {
         count: number;
+        __typename:"_QueryMeta";
     };
     pinnedBy?: [UserConfig];
 }

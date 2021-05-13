@@ -1,5 +1,5 @@
 export default {
-    setupFilesAfterEnv: ['./src/__tests__/setup.test.tsx'],
+    setupFilesAfterEnv: ['./src/__tests__/jest.setup.tsx'],
   // roots: ['<rootDir>/src'],
     transform: {
         '^.+\\.tsx?$': 'ts-jest',
