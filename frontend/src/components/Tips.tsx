@@ -25,12 +25,14 @@ export const Tips: React.FC<TipProps> = ({ task, mode }: TipProps) => {
                     onClick={() => {
                         setTipOpen(true);
                     }}
-                    className="addTipButton"
+                    className="openTipDialog"
                 >
                     Edit Tips
                 </button>
             )}
+            {tipOpen &&
             <TipDialog selected={task.tips} tipOpen={tipOpen} setTipOpen={setTipOpen} task={task} />
+            }
             {/* //TODO:Add/search tip input */}
         </TipStyle>
     );

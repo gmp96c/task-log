@@ -3,27 +3,12 @@ import React from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { Tip } from '../components/Tip';
 import { TaskConfig, TipConfig } from '../Types';
-import { randomTask, randomTip } from './dataMockFunctions';
-import { TipDialog } from '../components/TipDialog';
-import { GET_TIPS } from '../util/Queries';
+import { mocks, randomTask, randomTip, testTask } from './Mocks';
+import { TipDialog, } from '../components/TipDialog';
 
 test('loads and displays tips in order of most used', async () => {
-    const testTask = randomTask('23',10);
-    const mocks = [
-      {
-        request: {
-          query: GET_TIPS,
-          variables: {
-            id: testTask.id
-          }
-        },
-        result:{
-          data:{
-            Task: testTask
-          }
-        }
-      }
-    ];
+
+
     const element = render(
         <MockedProvider  mocks={mocks}>
             <TipDialog tipOpen={true} setTipOpen={()=>{}} task={testTask} selected={[testTask.tips[0],testTask.tips[2]]}/>

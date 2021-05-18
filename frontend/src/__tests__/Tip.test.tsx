@@ -1,17 +1,16 @@
 import { render, fireEvent, waitFor, screen, getByText } from '@testing-library/react';
 import React from 'react';
-import { ApolloProvider } from '@apollo/client';
 import { Tip } from '../components/Tip';
-import { TaskConfig, TipConfig } from '../Types';
 import { client } from '../Client';
-import { randomTask, randomTip } from './dataMockFunctions';
+import { mocks, randomTask, randomTip } from './Mocks';
+import { MockedProvider } from '@apollo/client/testing';
 
 test('loads and displays tip', async () => {
   const testTip = randomTip();
   const element = render(
-    <ApolloProvider client={client}>
-      <Tip tip={testTip} active task={randomTask(1)} />{' '}
-    </ApolloProvider>,
+     <MockedProvider  mocks={mocks}>
+      <Tip tip={testTip} active task={randomTask(null,1,null)} />
+    </MockedProvider>,
   );
   expect(element.baseElement.innerHTML).toContain(testTip.body);
 });
@@ -19,10 +18,12 @@ test('loads and displays tip', async () => {
 test('Active/inactive has different style', async () => {
   const testTip = randomTip();
   const Elements = render(
-    <ApolloProvider client={client}>
-      <Tip tip={testTip} active task={randomTask(1)} />
-      <Tip tip={testTip} active={false} task={randomTask(1)} />
-    </ApolloProvider>,
+     <MockedProvider  mocks={mocks}>
+       <>
+       <Tip tip={testTip} active task={randomTask(null,1,null)} />p
+       <Tip tip={testTip} active={false} task={randomTask(null,1,null)} />
+      </>
+    </MockedProvider>,
   );
   const [tip1, tip2] = Elements.getAllByText(testTip.body).map(el => el.getAttribute('class'));
   if (tip1 == null || tip2 == null) {

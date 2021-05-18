@@ -8,7 +8,6 @@ import { GET_TASKS_QUERY } from '../util/Queries';
 
 export const Tasks = (): ReactElement => {
     const user = useContext(UserContext);
-    console.log(user);
     const { loading, data } = useQuery<{ User: UserConfig }>(GET_TASKS_QUERY, {
         variables: { id: user?.id },
     });

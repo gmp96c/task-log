@@ -1,5 +1,5 @@
 import { graphql } from 'msw';
-import { randomTask } from './dataMockFunctions';
+import { randomTask } from './Mocks';
 
 export const handlers = [
   graphql.query('GET_TIPS', (req, res, ctx) => {
