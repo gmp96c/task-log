@@ -22,4 +22,3 @@ test('loads and displays task list', async () => {
     element.getByText(task.body);
   });
 });
-7

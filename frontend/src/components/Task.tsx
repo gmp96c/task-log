@@ -91,7 +91,7 @@ export const Task: React.FC<TaskProps> = ({ task, setFocused, unfocused }: TaskP
             </div>
             {mode !== 'Base' ? (
                 <ArrowBackIcon
-                    className="settingsIcon"
+                    className="arrowIcon"
                     onClick={() => {
                         setFocused(false);
                         setMode('Base');
@@ -178,6 +178,9 @@ const TaskStyle = styled.div<FocusedWrapperType>`
     }
     .settingsIcon {
         cursor: pointer;
+    }
+    .arrowIcon{
+      cursor: pointer;
     }
     ul {
         padding: 0;
