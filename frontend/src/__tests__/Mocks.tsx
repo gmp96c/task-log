@@ -1,9 +1,11 @@
+import { MockedResponse } from '@apollo/client/testing';
 import faker, { fake } from 'faker';
+import { SIGNIN_MUTATION } from '../components/Login';
 import { TaskConfig, TipConfig, UserConfig } from '../Types';
 import { GET_TASKS_QUERY, GET_TIPS } from '../util/Queries';
 export const testTask = randomTask('23',10, null);
 export const testUser = randomUser();
-export const mocks = [
+export const mocks:MockedResponse<Record<string, any>>[] = [
   {
     request: {
       query: GET_TIPS,
@@ -27,9 +29,24 @@ export const mocks = [
     result:{
       "data": {
         "User": testUser
-      },
-      "loading": false,
-      "networkStatus": 7
+      }
+    }
+  },
+  {
+    request: {
+      query: SIGNIN_MUTATION,
+      variables: {
+        email: faker.internet.email(),
+        password: faker.internet.password()
+      }
+    },
+    result:{
+      "data": {
+        "authenticateUserWithPassword": {
+          "token": faker.datatype.hexaDecimal(25),
+          "__typename": "authenticateUserOutput"
+        }
+      }
     }
   }
 ];

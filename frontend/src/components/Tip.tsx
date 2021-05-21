@@ -96,7 +96,8 @@ export const Tip: React.FC<TipProps> = ({ tip, active, task }: TipProps) => {
         }
     }
     return (
-        <TipStyle active={active} onClick={handleTipToggle}>
+        <TipStyle
+        className="tip" active={active} onClick={handleTipToggle}>
             {tip.body}
         </TipStyle>
     );

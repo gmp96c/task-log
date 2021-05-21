@@ -25,10 +25,9 @@ export const ADD_TIP = gql`
 interface AddTipConfig {
     task: TaskConfig;
     tipInput: string;
-    setTipInput: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export const AddTip: React.FC<AddTipConfig> = ({ task, tipInput, setTipInput }) => {
+export const AddTip: React.FC<AddTipConfig> = ({ task, tipInput, children}) => {
     const user = useContext(UserContext);
     const [addTip, addTipRes] = useMutation(ADD_TIP, {
         variables: {
@@ -68,23 +67,15 @@ export const AddTip: React.FC<AddTipConfig> = ({ task, tipInput, setTipInput }) 
     });
     function handleSubmit(e): void {
         if (tipInput.length < 3) {
-            // add error message for bad task names
+            //TODO: add error message for bad task names
+            return;
         }
         e.preventDefault();
-        addTip().then(() => {
-            setTipInput('');
-        });
+        addTip();
     }
     return (
         <div>
-            <input
-                placeholder="Add New Tip"
-                aria-label="add new tip"
-                value={tipInput}
-                onChange={(e) => {
-                    setTipInput(e.target.value);
-                }}
-            />
+           {children}
             <IconButton type="submit" aria-label="add" onClick={handleSubmit}>
                 <AddIcon />
             </IconButton>

@@ -17,7 +17,6 @@ test('loads and displays task list', async () => {
   );
   await waitForElementToBeRemoved(element.container.querySelector('h2'));
   // await waitFor(()=>expect(element.container.firstChild).not.toHaveTextContent('loading'));
-  console.log(testUser.currentTasks);
   testUser?.currentTasks?.forEach(task=>{
     element.getByText(task.body);
   });

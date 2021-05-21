@@ -4,7 +4,7 @@ import { TextField, Button } from '@material-ui/core';
 import { useMutation, gql } from '@apollo/client';
 import { CURRENT_USER_QUERY } from '../hooks/useAuth';
 
-const SIGNIN_MUTATION = gql`
+export const SIGNIN_MUTATION = gql`
     mutation SIGNIN_MUTATION($email: String!, $password: String!) {
         authenticateUserWithPassword(email: $email, password: $password) {
             token
@@ -19,6 +19,7 @@ export const Login = ({}) => {
         variables: { email, password },
         refetchQueries: [{ query: CURRENT_USER_QUERY }],
     });
+    console.log(mutationLoading,mutationError);
     const submitHandler = async () => {
         try {
             const loginRes = await doLogin();
