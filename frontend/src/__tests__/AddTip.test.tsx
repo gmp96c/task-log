@@ -20,17 +20,6 @@ test('loads and displays task list', async () => {
     </MockedProvider>,
   );
   const querySelector = (prop)=>element.container.querySelector(prop);
- let input = element.container.querySelector('input');
- if(input === null){
-   throw new Error('null');
- }
- userEvent.type(input , "test");
-
-//  userEvent.paste(input, "test");
-//  fireEvent.change(input , { target: { value: 'test' } })
- console.log(input.outerHTML);
-  expect(input?.value).toBe('test');
-
   let button = element.container.querySelector('button');
 
   // expect(querySelector('#loginHeader')).toHaveTextContent('Login');

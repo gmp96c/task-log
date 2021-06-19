@@ -19,7 +19,6 @@ export const Login = ({}) => {
         variables: { email, password },
         refetchQueries: [{ query: CURRENT_USER_QUERY }],
     });
-    console.log(mutationLoading,mutationError);
     const submitHandler = async () => {
         try {
             const loginRes = await doLogin();

@@ -19,7 +19,8 @@ const CREATE_TASK_MUTATION = gql`
 `;
 interface NewTaskConfig {
     body: string;
-    id: 'new';
+    id?: string;
+    __typename?: "Task";
 }
 
 const ADD_TASK_MUTATION = gql`
@@ -47,9 +48,8 @@ function isNewTask(selectedTask: TaskConfig | NewTaskConfig): selectedTask is Ne
     return (selectedTask as TaskConfig).id === undefined;
 }
 export const AddTask = (): ReactElement => {
-    const [selectedTask, setSelectedTask] = useState<TaskConfig | NewTaskConfig>({
+    const [selectedTask, setSelectedTask] = useState<NewTaskConfig>({
         body: '',
-        id: 'new',
     });
     const user = useContext(UserContext);
     const [addTask, addTaskRes] = useMutation<TaskConfig>(ADD_TASK_MUTATION, {
@@ -125,7 +125,7 @@ export const AddTask = (): ReactElement => {
                     });
                     return;
                 }
-                setSelectedTask({ body: inputValue, id: 'new' });
+                setSelectedTask({ body: inputValue });
                 if (inputValue.length > 2) {
                     debouncedFindTasks({
                         variables: { searchString: inputValue },
@@ -142,8 +142,16 @@ export const AddTask = (): ReactElement => {
     });
     async function handleSubmit(e): Promise<void> {
         e.preventDefault();
+        try{
+          console.log(`Is new task:${isNewTask(selectedTask)}`);
+          console.log(selectedTask);
         const res = await (isNewTask(selectedTask) ? createTask() : addTask());
-        setSelectedTask({ body: '', id: 'new' });
+
+        console.log(res);
+        }catch(err){
+          console.error(err);
+        }
+        setSelectedTask({ body: '' });
     }
     return (
         <AddTaskStyle>

@@ -66,8 +66,22 @@ export function randomTask(id,tipCount = 1, body): TaskConfig {
       __typename: 'Task',
       id: id || faker.datatype.number(100).toString(),
       body: body || faker.lorem.sentence(),
-      tips: bulkTips(tipCount),
+      tips: [...bulkTips(tipCount),{
+        __typename: 'Tip',
+        id: faker.random.alphaNumeric(8),
+        body: "qqqqqqqTest",
+        _pinnedByMeta: {
+            count: faker.datatype.number(50),
+            __typename:"_QueryMeta"
+        },
+    } ],
   };
+}
+export const tiplessTask:TaskConfig = {
+  __typename: 'Task',
+  id:  faker.datatype.number(100).toString(),
+  body: faker.lorem.sentence(),
+  tips:[]
 }
 function bulkTips(num){
   let res: TipConfig[] = [];
