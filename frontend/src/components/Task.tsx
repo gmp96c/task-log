@@ -15,6 +15,7 @@ import { TaskConfig, TipConfig, ModeType } from '../Types';
 // eslint-disable-next-line import/no-cycle
 import { Tips } from './Tips';
 import { UserContext } from '../util/UserContextWrapper';
+import { AddLog } from './AddLog';
 
 interface TaskProps {
     task: TaskConfig;
@@ -106,6 +107,7 @@ export const Task: React.FC<TaskProps> = ({ task, setFocused, unfocused }: TaskP
                     }}
                 />
             )}
+            <AddLog task={task} />
             <Dialog open={confirmOpen} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
                 <DialogTitle id="alert-dialog-title">Remove task?</DialogTitle>
                 <DialogContent>
