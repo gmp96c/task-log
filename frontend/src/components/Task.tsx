@@ -63,14 +63,17 @@ export const Task: React.FC<TaskProps> = ({ task, setFocused, unfocused }: TaskP
             <h4>{task.body}</h4>
             <Tips task={task} mode={mode} />
             <div className="logControls">
+              { mode !== 'Log' &&
                 <button
                     type="button"
                     onClick={() => {
-                        setMode('Log');
+                      setFocused();
+                      setMode('Log');
                     }}
                 >
                     Add Log
                 </button>
+}
                 <button
                     type="button"
                     onClick={() => {
@@ -107,7 +110,10 @@ export const Task: React.FC<TaskProps> = ({ task, setFocused, unfocused }: TaskP
                     }}
                 />
             )}
+            {
+            mode === 'Log' &&
             <AddLog task={task} />
+          }
             <Dialog open={confirmOpen} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
                 <DialogTitle id="alert-dialog-title">Remove task?</DialogTitle>
                 <DialogContent>
