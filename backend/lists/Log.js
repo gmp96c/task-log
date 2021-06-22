@@ -30,7 +30,8 @@ module.exports = {
             many: false,
         },
     },
-    labelResolver: (item) => item.body,
+    labelResolver: (item) =>
+        `${item.task} - ${item.body.slice(0, 25)}... - ${item.createdAt}`,
     // List-level access controls
     access: {
         read: access.userIsAdminOrOwner,
