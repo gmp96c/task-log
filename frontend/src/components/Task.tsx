@@ -16,7 +16,7 @@ import { TaskConfig, TipConfig, ModeType } from '../Types';
 import { Tips } from './Tips';
 import { UserContext } from '../util/UserContextWrapper';
 import { AddLog } from './AddLog';
-
+import {Logs} from './Logs';
 interface TaskProps {
     task: TaskConfig;
     setFocused: {
@@ -77,6 +77,7 @@ export const Task: React.FC<TaskProps> = ({ task, setFocused, unfocused }: TaskP
                 <button
                     type="button"
                     onClick={() => {
+                      setFocused();
                         setMode('History');
                     }}
                 >
@@ -113,6 +114,10 @@ export const Task: React.FC<TaskProps> = ({ task, setFocused, unfocused }: TaskP
             {
             mode === 'Log' &&
             <AddLog task={task} />
+          }
+          {
+            mode === 'History' &&
+            <Logs task={task}/>
           }
             <Dialog open={confirmOpen} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
                 <DialogTitle id="alert-dialog-title">Remove task?</DialogTitle>

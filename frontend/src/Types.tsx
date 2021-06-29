@@ -4,7 +4,7 @@ export interface TipConfig {
     readonly body: string;
     _pinnedByMeta: {
         count: number;
-        __typename:"_QueryMeta";
+        __typename: '_QueryMeta';
     };
     pinnedBy?: [UserConfig];
 }
@@ -23,6 +23,12 @@ export interface UserConfig {
     readonly name: string;
     readonly email?: string;
     currentTasks?: TaskConfig[];
+}
+
+export interface LogConfig {
+    readonly id: string;
+    readonly __typename: 'Log';
+    body: string;
 }
 
 export type ModeType = 'Base' | 'Settings' | 'Log' | 'History';
