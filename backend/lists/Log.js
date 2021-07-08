@@ -2,6 +2,7 @@ const { Text, Relationship, DateTimeUtc } = require('@keystonejs/fields');
 const {
     AuthedRelationship,
 } = require('@keystonejs/fields-authed-relationship');
+const { atTracking } = require('@keystonejs/list-plugins');
 const { access } = require('../access.js');
 
 module.exports = {

@@ -92,6 +92,7 @@ module.exports = async (keystone) => {
                 'organize everything on hd',
                 'Land on mars',
                 'I need another task stat!',
+                // ...new Array(100).fill(faker.lorem.sentence()),
             ].map((el) => createTask(el)),
         });
         await createItems({
@@ -107,13 +108,13 @@ module.exports = async (keystone) => {
                 'I would strong recommend',
                 'Whats the deal with',
                 "Thanks that's a good idea",
-                ...Array.from(Array(20)).map(() => faker.lorem.sentence()),
+                ...Array.from(Array(10)).map(() => faker.lorem.sentence()),
             ].map((el) => createTip(el)),
         });
         await createItems({
             keystone,
             listKey: 'Log',
-            items: Array.from(Array(10)).map(() => createLog()),
+            items: Array.from(Array(1000)).map(() => createLog()),
         });
     } catch (err) {
         console.log(err);
@@ -161,7 +162,7 @@ function createTip(body) {
 function createLog() {
     return {
         data: {
-            body: faker.lorem.paragraph(),
+            body: `{"blocks":[{"key":"3b76q","text":"${faker.lorem.paragraph()}","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`,
             // creator: {
             //     connect: {
             //         id: Math.floor(Math.random() * 3) + 1,
