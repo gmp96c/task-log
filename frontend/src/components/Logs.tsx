@@ -13,8 +13,8 @@ import { UserContext } from '../util/UserContextWrapper';
 import { TaskConfig, LogConfig, UserConfig } from '../Types';
 
 export const GET_LOG = gql`
-    query GET_LOG($taskId: ID!) {
-        allLogs(where: { task: { id: $taskId } }) {
+    query GET_LOG($taskId: ID!, $index: Int) {
+        allLogs(where: { task: { id: $taskId } }, first: 1, skip: $index, orderBy: "createdAt") {
             id
             body
             task {
@@ -51,4 +51,3 @@ const LogsStyle = styled.ul`
     width: 100%;
     grid-column: 1 / 5;
 `;
-0;

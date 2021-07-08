@@ -3,7 +3,7 @@ import IconButton from '@material-ui/core/IconButton';
 import { gql, useMutation } from '@apollo/client';
 import AddIcon from '@material-ui/icons/Add';
 import { GET_TASKS_QUERY, GET_TIPS } from '../util/Queries';
-import { convertToRaw, EditorState, ContentState, RichUtils, Modifier } from 'draft-js';
+import { convertToRaw, EditorState, ContentState, RichUtils, Modifier, convertFromRaw } from 'draft-js';
 import { Editor } from 'react-draft-wysiwyg';
 import '../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import draftToMarkdown from 'draftjs-to-markdown';
@@ -21,19 +21,22 @@ export const ADD_LOG = gql`
             task {
                 id
             }
+            createdAt
         }
     }
 `;
 
 interface AddLogConfig {
     task: TaskConfig;
+    mode: 'Log' | 'History';
+    log?: LogConfig;
 }
 
-export const AddLog: React.FC<AddLogConfig> = ({ task, children }) => {
+export const LogEditor: React.FC<AddLogConfig> = ({ task, mode, log, children }) => {
     const [editorState, setEditorState] = useState(EditorState.createEmpty());
     const [addLog, addLogRes] = useMutation(ADD_LOG, {
         variables: {
-            body: getMarkdownFromState(editorState),
+            body: JSON.stringify(convertToRaw(editorState.getCurrentContent())),
             taskId: task.id,
         },
         update: (cache, { data: { createLog: log } }) => {
@@ -58,9 +61,9 @@ export const AddLog: React.FC<AddLogConfig> = ({ task, children }) => {
             }
         },
     });
-    function getMarkdownFromState(eState: EditorState): string {
-        return draftToMarkdown(convertToRaw(eState.getCurrentContent()));
-    }
+    // function getMarkdownFromState(eState: EditorState): string {
+    //     return draftToMarkdown(convertToRaw(eState.getCurrentContent()));
+    // }
     function clearEditorState(): void {
         const removeSelectedBlocksStyle = (eState: EditorState): EditorState => {
             const newContentState = RichUtils.tryToRemoveBlockStyle(eState);
@@ -84,23 +87,34 @@ export const AddLog: React.FC<AddLogConfig> = ({ task, children }) => {
         };
         setEditorState(getResetEditorState(editorState));
     }
+    useEffect(() => {
+        console.log(log);
+        clearEditorState();
+        if (mode === 'History' && log?.body !== undefined) {
+            setEditorState(EditorState.createWithContent(convertFromRaw(JSON.parse(log.body))));
+        }
+    }, [mode, log]);
     return (
         <EditorStyle>
-            <button
-                type="button"
-                onClick={() => {
-                    addLog().then((res) => {
-                        clearEditorState();
-                    });
-                }}
-            >
-                Save Log
-            </button>
+            {mode === 'Log' && (
+                <button
+                    type="button"
+                    onClick={() => {
+                        addLog().then((res) => {
+                            clearEditorState();
+                        });
+                    }}
+                >
+                    Save Log
+                </button>
+            )}
             <Editor
                 editorState={editorState}
+                readOnly={mode === 'History'}
                 wrapperClassName="demo-wrapper"
                 editorClassName="demo-editor"
                 onEditorStateChange={setEditorState}
+                toolbarHidden={mode === 'History'}
                 toolbar={{
                     options: [
                         'blockType',
