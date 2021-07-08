@@ -38,7 +38,7 @@ export default function Layout({ children }) {
                 {userData?.authenticatedUser && (
                     <>
                         {/* <UserInfo info={userData} /> */}
-                        <h4>Demouser7</h4>
+                        <h4>{userData?.authenticatedUser.name}</h4>
                         <h4 id="logout" onClick={handleLogout}>
                             Logout
                         </h4>

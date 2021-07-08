@@ -4,19 +4,20 @@ import { gql, useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import SettingsIcon from '@material-ui/icons/Settings';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import Button from '@material-ui/core/Button';
+import { Select } from '@material-ui/core';
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import MenuItem from '@material-ui/core/MenuItem';
 import { useAuth } from '../hooks/useAuth';
 import { TaskConfig, TipConfig, ModeType, LogConfig } from '../Types';
 // eslint-disable-next-line import/no-cycle
 import { Tips } from './Tips';
 import { UserContext } from '../util/UserContextWrapper';
 import { LogEditor } from './LogEditor';
-import { Logs } from './Logs';
 
 interface TaskProps {
     task: TaskConfig;
@@ -50,9 +51,9 @@ const REMOVE_TASK_MUTATION = gql`
         }
     }
 `;
-export const GET_LOG = gql`
-    query GET_LOG($taskId: ID!, $index: Int) {
-        allLogs(where: { task: { id: $taskId } }, first: 1, skip: $index, sortBy: createdAt_DESC) {
+export const GET_LOGS_FOR_TASK = gql`
+    query GET_LOGS_FOR_TASK($taskId: ID!) {
+        allLogs(where: { task: { id: $taskId } }, sortBy: createdAt_DESC) {
             id
             body
             task {
@@ -67,32 +68,24 @@ export const Task: React.FC<TaskProps> = ({ task, setFocused, unfocused }: TaskP
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [mode, setMode] = useState<ModeType>('Base');
     const [logIndex, setLogIndex] = useState(0);
-    const [logViewState, setLogViewState] = useState<'first' | 'last' | 'norm'>('norm');
-    const [lastIndex, setLastIndex] = useState<number>(-Infinity);
+    const [logViewState, setLogViewState] = useState<'first' | 'last' | 'norm' | 'single'>('norm');
     const [removeTask, removeTaskRes] = useMutation(REMOVE_TASK_MUTATION, {
         variables: {
             taskId: task.id,
             userId: user?.id,
         },
     });
-    const { loading, data: logData } = useQuery<{ allLogs: LogConfig[] }>(GET_LOG, {
+    const { loading, data: logData } = useQuery<{ allLogs: LogConfig[] }>(GET_LOGS_FOR_TASK, {
         variables: {
             taskId: task.id,
-            index: logIndex,
         },
     });
-    useEffect(() => {
-        if (logIndex === lastIndex) {
-            setLogViewState('last');
-        } else if (logData && logData.allLogs.length === 0 && logIndex > 0) {
-            setLastIndex(logIndex - 1);
-            setLogIndex(logIndex - 1);
-        } else if (logIndex === 0) {
-            setLogViewState('first');
-        } else {
-            setLogViewState('norm');
-        }
-    }, [logData, logIndex]);
+    // useEffect(() => {
+    //     if (logData?.allLogs === undefined) {
+    //         return;
+    //     }
+    // }, [logData, logIndex]);
+    console.log(logData);
     return (
         <TaskStyle unfocused={unfocused} logViewState={logViewState}>
             <h4>{task.body}</h4>
@@ -109,15 +102,17 @@ export const Task: React.FC<TaskProps> = ({ task, setFocused, unfocused }: TaskP
                         Add Log
                     </button>
                 )}
-                <button
-                    type="button"
-                    onClick={() => {
-                        setFocused();
-                        setMode('History');
-                    }}
-                >
-                    View Logs
-                </button>
+                {mode !== 'History' && (loading || (logData?.allLogs && logData.allLogs.length > 0)) && (
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setFocused();
+                            setMode('History');
+                        }}
+                    >
+                        View Logs
+                    </button>
+                )}
                 {mode === 'Settings' && (
                     <button
                         type="button"
@@ -151,7 +146,7 @@ export const Task: React.FC<TaskProps> = ({ task, setFocused, unfocused }: TaskP
                     <button
                         title="back a log"
                         type="button"
-                        disabled={logViewState === 'last'}
+                        disabled={logIndex === logData?.allLogs.length - 1}
                         className="logBack"
                         onClick={() => {
                             if (!loading) {
@@ -159,15 +154,21 @@ export const Task: React.FC<TaskProps> = ({ task, setFocused, unfocused }: TaskP
                             }
                         }}
                     >
-                        back
+                        Previous
                     </button>
-                    <h5>{`${new Date(logData?.allLogs[0]?.createdAt).toLocaleDateString()} ${new Date(
-                        logData?.allLogs[0]?.createdAt,
-                    ).toLocaleTimeString()}`}</h5>
+
+                    <Select value={logIndex} onChange={(e) => setLogIndex(e.target.value as number)}>
+                        {logData?.allLogs.map((el, i) => (
+                            <MenuItem value={i} key={el.id}>{`${new Date(
+                                el?.createdAt,
+                            ).toLocaleDateString()} ${new Date(el?.createdAt).toLocaleTimeString()}`}</MenuItem>
+                        ))}
+                    </Select>
+
                     <button
                         title="back a log"
                         type="button"
-                        disabled={logViewState === 'first'}
+                        disabled={logIndex === 0}
                         className="logForward"
                         onClick={() => {
                             if (!loading) {
@@ -175,12 +176,20 @@ export const Task: React.FC<TaskProps> = ({ task, setFocused, unfocused }: TaskP
                             }
                         }}
                     >
-                        forward
+                        Next
                     </button>
                 </>
             )}
             {['Log', 'History'].includes(mode) && !loading && (
-                <LogEditor task={task} mode={mode === 'Log' ? 'Log' : 'History'} log={logData?.allLogs[0]} />
+                <LogEditor
+                    task={task}
+                    mode={mode === 'Log' ? 'Log' : 'History'}
+                    log={logData?.allLogs[logIndex]}
+                    setToHistory={() => {
+                        setLogIndex(0);
+                        setMode('History');
+                    }}
+                />
             )}
             <Dialog open={confirmOpen} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
                 <DialogTitle id="alert-dialog-title">Remove task?</DialogTitle>

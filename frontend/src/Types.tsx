@@ -29,7 +29,7 @@ export interface LogConfig {
     readonly id: string;
     readonly __typename: 'Log';
     body: string;
-    createdAt: Date;
+    createdAt: string;
 }
 
 export type ModeType = 'Base' | 'Settings' | 'Log' | 'History';

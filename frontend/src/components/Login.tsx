@@ -12,27 +12,77 @@ export const SIGNIN_MUTATION = gql`
     }
 `;
 
-export const Login = ({}) => {
+const SIGNUP_MUTATION = gql`
+    mutation SIGNUP_MUTATION($email: String!, $password: String!, $name: String!) {
+        createUser(data: { email: $email, password: $password, name: $name }) {
+            id
+        }
+    }
+`;
+
+export const Login: React.FC = () => {
     const [email, setEmail] = useState('demo@demo.demo');
     const [password, setPassword] = useState('demodemo');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [signUp, setSignUp] = useState(false);
+    const [error, setError] = useState('');
+    const [name, setName] = useState('');
     const [doLogin, { loading: mutationLoading, error: mutationError }] = useMutation(SIGNIN_MUTATION, {
         variables: { email, password },
         refetchQueries: [{ query: CURRENT_USER_QUERY }],
     });
-    const submitHandler = async () => {
+    const [doSignup, { loading: signupLoading, error: signupError }] = useMutation(SIGNUP_MUTATION, {
+        variables: { email, password, name },
+        onCompleted: doLogin,
+        onError: (error) => {
+            setError('Email already has an account.');
+        },
+    });
+    const submitHandler = async (): Promise<void> => {
         try {
-            const loginRes = await doLogin();
-        } catch (error) {
-            console.log(error);
+            if (signUp) {
+                try {
+                    if (name.length < 3) {
+                        throw new Error('Please set a username over 3 characters');
+                    }
+                    if (password.length < 6) {
+                        throw new Error('Please make your password longer than 6 characters.');
+                    }
+                    if (confirmPassword !== password) {
+                        throw new Error('Your passwords do not match.');
+                    }
+                } catch (err) {
+                    console.log('setting a');
+                    setError(err.message);
+                    return;
+                }
+                await doSignup();
+            } else {
+                const loginRes = await doLogin();
+            }
+        } catch (err) {
+            console.log('setting b');
+            setError(signUp ? 'Invalid Signup Info' : 'Invalid Login Info');
         }
     };
 
     return (
         <LoginStyle>
             <form id="loginBody">
-                <h2 id="loginHeader">Login</h2>
+                <h2 id="loginHeader"> {signUp ? 'Sign Up' : 'Login'}</h2>
                 {!mutationLoading ? (
                     <>
+                        {signUp && (
+                            <TextField
+                                className="loginInput"
+                                label="Name"
+                                type="input"
+                                value={name}
+                                onChange={(e) => {
+                                    setName(e.target.value);
+                                }}
+                            />
+                        )}
                         <TextField
                             className="loginInput"
                             label="Email"
@@ -52,15 +102,35 @@ export const Login = ({}) => {
                                 setPassword(e.target.value);
                             }}
                         />
+                        {signUp && (
+                            <TextField
+                                className="loginInput"
+                                label="Confirm Password"
+                                type="password"
+                                value={confirmPassword}
+                                onChange={(e) => {
+                                    setConfirmPassword(e.target.value);
+                                }}
+                            />
+                        )}
                         <div id="loginControl">
-                            <Button color="primary">Sign Up</Button>
+                            <Button
+                                color="primary"
+                                onClick={() => {
+                                    setError('');
+                                    setSignUp(!signUp);
+                                }}
+                            >
+                                {!signUp ? 'Sign Up' : 'Login'}
+                            </Button>
                             <Button variant="contained" color="secondary" onClick={submitHandler}>
-                                Login
+                                {signUp ? 'Sign Up' : 'Login'}
                             </Button>
                         </div>
+                        {error && <h4 id="LoginError">{error}</h4>}
                     </>
                 ) : (
-                    <h3>Loading lol!</h3>
+                    <h3>Loading</h3>
                 )}
             </form>
         </LoginStyle>
@@ -74,6 +144,16 @@ const LoginStyle = styled.main`
     background: #d3d3d3;
     align-items: center;
     justify-content: center;
+    #LoginError {
+        margin: 0;
+        padding: 0;
+        font-size: 1rem;
+        max-width: 20rem;
+        word-wrap: normal;
+        color: red;
+        margin-top: 1rem;
+        text-align: center;
+    }
     #loginBody {
         background: #f3f3f3;
         min-width: 20rem;

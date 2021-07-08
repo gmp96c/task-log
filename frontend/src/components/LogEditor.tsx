@@ -2,16 +2,18 @@ import React, { useState, useContext, useEffect } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import { gql, useMutation } from '@apollo/client';
 import AddIcon from '@material-ui/icons/Add';
-import { GET_TASKS_QUERY, GET_TIPS } from '../util/Queries';
-import { convertToRaw, EditorState, ContentState, RichUtils, Modifier, convertFromRaw } from 'draft-js';
-import { Editor } from 'react-draft-wysiwyg';
+
 import '../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import draftToMarkdown from 'draftjs-to-markdown';
 
 import styled from 'styled-components';
+import { Editor } from 'react-draft-wysiwyg';
+import { convertToRaw, EditorState, ContentState, RichUtils, Modifier, convertFromRaw } from 'draft-js';
+import { GET_TASKS_QUERY, GET_TIPS } from '../util/Queries';
+
 import { UserContext } from '../util/UserContextWrapper';
 import { LogConfig, TaskConfig, UserConfig } from '../Types';
-import { GET_LOG } from './Logs';
+import { GET_LOGS_FOR_TASK } from './Task';
 
 export const ADD_LOG = gql`
     mutation ADD_LOG($body: String!, $taskId: ID!) {
@@ -30,27 +32,28 @@ interface AddLogConfig {
     task: TaskConfig;
     mode: 'Log' | 'History';
     log?: LogConfig;
+    setToHistory: () => void;
 }
 
-export const LogEditor: React.FC<AddLogConfig> = ({ task, mode, log, children }) => {
+export const LogEditor: React.FC<AddLogConfig> = ({ task, mode, log, setToHistory, children }) => {
     const [editorState, setEditorState] = useState(EditorState.createEmpty());
-    const [addLog, addLogRes] = useMutation(ADD_LOG, {
+    const [addLog, { loading: addLoading, error: addError }] = useMutation(ADD_LOG, {
         variables: {
             body: JSON.stringify(convertToRaw(editorState.getCurrentContent())),
             taskId: task.id,
         },
-        update: (cache, { data: { createLog: log } }) => {
+        update: (cache, { data: { createLog: newLog } }) => {
             try {
                 const oldLogs: { allLogs: LogConfig[] } | null = cache.readQuery({
-                    query: GET_LOG,
+                    query: GET_LOGS_FOR_TASK,
                     variables: {
                         taskId: task.id,
                     },
                 });
                 cache.writeQuery({
-                    query: GET_LOG,
+                    query: GET_LOGS_FOR_TASK,
                     data: {
-                        allLogs: [...(oldLogs?.allLogs || []), log],
+                        allLogs: [newLog, ...(oldLogs?.allLogs || [])],
                     },
                     variables: {
                         taskId: task.id,
@@ -64,6 +67,16 @@ export const LogEditor: React.FC<AddLogConfig> = ({ task, mode, log, children })
     // function getMarkdownFromState(eState: EditorState): string {
     //     return draftToMarkdown(convertToRaw(eState.getCurrentContent()));
     // }
+    useEffect(() => {
+        if (addError !== undefined) {
+            console.log(JSON.stringify(addError));
+            console.log('hi');
+            console.log(Object.values(addError?.networkError));
+            if (addError.networkError && Object.values(addError.networkError).includes(413)) {
+                alert('Log exceeds maximum length, please shorten or use multiple logs. ');
+            }
+        }
+    }, [addError]);
     function clearEditorState(): void {
         const removeSelectedBlocksStyle = (eState: EditorState): EditorState => {
             const newContentState = RichUtils.tryToRemoveBlockStyle(eState);
@@ -102,6 +115,7 @@ export const LogEditor: React.FC<AddLogConfig> = ({ task, mode, log, children })
                     onClick={() => {
                         addLog().then((res) => {
                             clearEditorState();
+                            setToHistory();
                         });
                     }}
                 >
@@ -115,6 +129,7 @@ export const LogEditor: React.FC<AddLogConfig> = ({ task, mode, log, children })
                 editorClassName="demo-editor"
                 onEditorStateChange={setEditorState}
                 toolbarHidden={mode === 'History'}
+                stripPastedStyles
                 toolbar={{
                     options: [
                         'blockType',
