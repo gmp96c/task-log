@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import { TextField } from '@material-ui/core';
+import { Button, InputAdornment, TextField } from '@material-ui/core';
 import React, { ReactElement, useState, useContext } from 'react';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useCombobox } from 'downshift';
@@ -20,7 +20,7 @@ const CREATE_TASK_MUTATION = gql`
 interface NewTaskConfig {
     body: string;
     id?: string;
-    __typename?: "Task";
+    __typename?: 'Task';
 }
 
 const ADD_TASK_MUTATION = gql`
@@ -43,6 +43,10 @@ const SEARCH_TASKS_QUERY = gql`
         }
     }
 `;
+
+interface StyleProps {
+    textEntered: boolean;
+}
 
 function isNewTask(selectedTask: TaskConfig | NewTaskConfig): selectedTask is NewTaskConfig {
     return (selectedTask as TaskConfig).id === undefined;
@@ -142,32 +146,35 @@ export const AddTask = (): ReactElement => {
     });
     async function handleSubmit(e): Promise<void> {
         e.preventDefault();
-        try{
-          console.log(`Is new task:${isNewTask(selectedTask)}`);
-          console.log(selectedTask);
-        const res = await (isNewTask(selectedTask) ? createTask() : addTask());
+        try {
+            if (selectedTask.body) {
+                const res = await (isNewTask(selectedTask) ? createTask() : addTask());
 
-        console.log(res);
-        }catch(err){
-          console.error(err);
+                console.log(res);
+            }
+        } catch (err) {
+            console.error(err);
         }
         setSelectedTask({ body: '' });
     }
     return (
-        <AddTaskStyle>
-            <label {...getLabelProps()}>Add a new task</label>
+        <AddTaskStyle textEntered={!!selectedTask.body}>
             <div {...getComboboxProps({ id: 'combobox' })}>
-                <input {...getInputProps({ value: selectedTask.body })} />
-                {/* <button
-          type="button"
-          {...getToggleButtonProps({ id: "comboButton" })}
-          aria-label={"toggle menu"}
-        >
-          &#8595;
-        </button> */}
-                <button type="submit" onClick={handleSubmit}>
-                    Add
-                </button>
+                <TextField
+                    fullWidth
+                    variant="outlined"
+                    {...getInputProps({ value: selectedTask.body })}
+                    placeholder="Add a new task"
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <Button className="addAdornment" type="submit" onClick={handleSubmit}>
+                                    Save
+                                </Button>
+                            </InputAdornment>
+                        ),
+                    }}
+                />
             </div>
             <ul {...getMenuProps()}>
                 {isOpen &&
@@ -185,19 +192,52 @@ export const AddTask = (): ReactElement => {
     );
 };
 
-const AddTaskStyle = styled.div`
-    width: 600px;
+const AddTaskStyle = styled.div<StyleProps>`
     margin: 0 auto;
     display: flex;
     flex-direction: column;
     align-items: center;
-
+    /* position: fixed; */
+    top: 3rem;
+    width: 100%;
+    ul {
+        position: fixed;
+        list-style-type: none;
+        z-index: 11;
+        background: white;
+        transform: translateY(42px);
+        *:hover {
+            background: #ebafdc;
+        }
+        li {
+        }
+    }
+    @media (max-width: 375px) {
+        top: 4.5rem;
+    }
+    @media (max-width: 440px) {
+        left: 1rem;
+        right: 1rem;
+        transform: none;
+        width: 100%;
+    }
     #combobox {
         width: auto;
         display: flex;
+        background: white;
+
+        max-width: 100rem;
+        min-width: 250px;
+        width: 80%;
     }
-    button {
-        width: 25%;
+    #taskInput {
+        width: 100%;
+    }
+    .addAdornment {
+        width: 100%;
         max-width: 200px;
+        z-index: ${(props) => (props.textEntered ? 10 : -10)};
+        background: var(--submit-color);
+        color: white;
     }
 `;

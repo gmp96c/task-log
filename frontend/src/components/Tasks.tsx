@@ -17,20 +17,23 @@ export const Tasks = (): ReactElement => {
     }
     return (
         <TaskListStyle>
-            {data.User.currentTasks.map((task: TaskConfig) => (
-                <Task
-                    key={task.id}
-                    task={task}
-                    setFocused={(focusing = true): void => {
-                        if (focusing) {
-                            setFocused(task.id);
-                        } else {
-                            setFocused(null);
-                        }
-                    }}
-                    unfocused={focused === null ? false : focused !== task.id}
-                />
-            ))}
+            {data.User.currentTasks
+                .slice()
+                .reverse()
+                .map((task: TaskConfig) => (
+                    <Task
+                        key={task.id}
+                        task={task}
+                        setFocused={(focusing = true): void => {
+                            if (focusing) {
+                                setFocused(task.id);
+                            } else {
+                                setFocused(null);
+                            }
+                        }}
+                        unfocused={focused === null ? false : focused !== task.id}
+                    />
+                ))}
         </TaskListStyle>
     );
 };
@@ -38,4 +41,14 @@ const TaskListStyle = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-top: 1rem;
+    overflow-y: scroll;
+    flex-grow: 1;
+    margin-bottom: 5rem;
+    /* ::last-child {
+        padding-bottom: 10rem;
+    } */
+    @media (max-width: 375px) {
+        margin-top: 2rem;
+    }
 `;

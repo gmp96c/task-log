@@ -33,9 +33,9 @@ export const App: React.FC = () => {
 const MainWrapper = styled.main`
     grid-area: main;
     padding: 25px;
-    width: 90%;
     max-width: 900px;
     display: flex;
     width: 100%;
+    height: 100%;
     flex-direction: column;
 `;

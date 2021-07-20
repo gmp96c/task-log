@@ -30,9 +30,7 @@ export const Tips: React.FC<TipProps> = ({ task, mode }: TipProps) => {
                     Edit Tips
                 </button>
             )}
-            {tipOpen &&
-            <TipDialog selected={task.tips} tipOpen={tipOpen} setTipOpen={setTipOpen} task={task} />
-            }
+            {tipOpen && <TipDialog selected={task.tips} tipOpen={tipOpen} setTipOpen={setTipOpen} task={task} />}
             {/* //TODO:Add/search tip input */}
         </TipStyle>
     );
@@ -41,6 +39,9 @@ const TipStyle = styled.div`
     display: flex;
     flex-direction: column;
     text-align: center;
+    word-wrap: break-word;
+    max-width: 35%;
+    min-width: 25%;
     .addTipButton {
         margin-top: 1rem;
     }

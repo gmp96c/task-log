@@ -113,10 +113,12 @@ export const LogEditor: React.FC<AddLogConfig> = ({ task, mode, log, setToHistor
                 <button
                     type="button"
                     onClick={() => {
-                        addLog().then((res) => {
-                            clearEditorState();
-                            setToHistory();
-                        });
+                        if (editorState.getCurrentContent().getPlainText()) {
+                            addLog().then((res) => {
+                                clearEditorState();
+                                setToHistory();
+                            });
+                        }
                     }}
                 >
                     Save Log

@@ -52,8 +52,8 @@ const REMOVE_TASK_MUTATION = gql`
     }
 `;
 export const GET_LOGS_FOR_TASK = gql`
-    query GET_LOGS_FOR_TASK($taskId: ID!) {
-        allLogs(where: { task: { id: $taskId } }, sortBy: createdAt_DESC) {
+    query GET_LOGS_FOR_TASK($taskId: ID!, $userId: ID!) {
+        allLogs(where: { task: { id: $taskId }, creator: { id: $userId } }, sortBy: createdAt_DESC) {
             id
             body
             task {
@@ -229,8 +229,8 @@ const TaskStyle = styled.div<FocusedWrapperType>`
     max-width: 800px;
     width: 90%;
     text-align: center;
-    display: ${(props) => (props.unfocused ? 'none' : 'grid')};
-    grid-template-columns: 1fr 0.8fr 0.3fr auto;
+    display: ${(props) => (props.unfocused ? 'none' : 'flex')};
+    /* grid-template-columns: 1fr 0.8fr 0.3fr auto; */
     border: 1px solid black;
     border-radius: 2px;
     padding: 0.7rem;
@@ -248,6 +248,7 @@ const TaskStyle = styled.div<FocusedWrapperType>`
         margin: 0;
         padding: 0;
         text-align: left;
+        flex-grow: 4;
     }
     h5 {
         font-size: 1rem;
