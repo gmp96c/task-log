@@ -16,7 +16,9 @@ export const Tips: React.FC<TipProps> = ({ task, mode }: TipProps) => {
                 {[...task.tips]
                     .sort((a, b) => (a._pinnedByMeta.count > b._pinnedByMeta.count ? 1 : -1))
                     .map((tip: TipConfig) => (
-                        <li key={tip.id}>{tip.body}</li>
+                        <li className="tipBody" key={tip.id}>
+                            {tip.body}
+                        </li>
                     ))}
             </ul>
             {mode === 'Settings' && (
@@ -38,10 +40,14 @@ export const Tips: React.FC<TipProps> = ({ task, mode }: TipProps) => {
 const TipStyle = styled.div`
     display: flex;
     flex-direction: column;
-    text-align: center;
     word-wrap: break-word;
-    max-width: 35%;
-    min-width: 25%;
+    width: 100%;
+    /* max-width: 35%;
+    min-width: 25%; */
+    .tipBody {
+        text-align: left;
+        margin-bottom: 0.2rem;
+    }
     .addTipButton {
         margin-top: 1rem;
     }

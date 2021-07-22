@@ -46,11 +46,13 @@ const SEARCH_TASKS_QUERY = gql`
 
 interface StyleProps {
     textEntered: boolean;
+    open: boolean;
 }
 
 function isNewTask(selectedTask: TaskConfig | NewTaskConfig): selectedTask is NewTaskConfig {
     return (selectedTask as TaskConfig).id === undefined;
 }
+
 export const AddTask = (): ReactElement => {
     const [selectedTask, setSelectedTask] = useState<NewTaskConfig>({
         body: '',
@@ -62,6 +64,7 @@ export const AddTask = (): ReactElement => {
             userId: user?.id,
         },
     });
+    const [taskDisplay, setTaskDisplay] = useState<TaskConfig[]>([]);
     const [createTask, createTaskRes] = useMutation(CREATE_TASK_MUTATION, {
         variables: {
             body: selectedTask.body,
@@ -92,11 +95,15 @@ export const AddTask = (): ReactElement => {
             }
         },
     });
-    const [findTasks, findTasksRes] = useLazyQuery(SEARCH_TASKS_QUERY, {
+    const [findTasks, { variables }] = useLazyQuery(SEARCH_TASKS_QUERY, {
         fetchPolicy: 'no-cache',
+        onCompleted: (data) => {
+            const taskSet = new Set(user?.currentTasks?.map((el) => el.id));
+            setTaskDisplay(data.results.filter((i: TaskConfig) => !taskSet.has(i.id)));
+        },
+        pollInterval: 0,
     });
-    const tasks: [TaskConfig] = findTasksRes?.data?.results ? findTasksRes?.data.results : [];
-    const debouncedFindTasks = debounce(findTasks, 200);
+    const debouncedFindTasks = debounce(findTasks, 300);
     function getDuplicateTask(list, input): false | TaskConfig {
         const dupes = list.filter(
             (el) => el.body.split(' ').join('').toLowerCase() === input.split(' ').join('').toLowerCase(),
@@ -117,11 +124,15 @@ export const AddTask = (): ReactElement => {
         highlightedIndex,
         getItemProps,
     } = useCombobox({
-        items: tasks,
+        items: taskDisplay,
         itemToString: (item: TaskConfig | null) => item?.body || '',
         onStateChange: ({ inputValue, type, ...val }) => {
             if ((type === '__input_change__' && inputValue) || inputValue === '') {
-                const dupe = getDuplicateTask(tasks, inputValue);
+                if (inputValue === variables?.searchString) {
+                    return;
+                }
+                const dupe = getDuplicateTask(taskDisplay, inputValue);
+                debouncedFindTasks.cancel();
                 if (dupe) {
                     setSelectedTask(dupe);
                     debouncedFindTasks({
@@ -149,7 +160,6 @@ export const AddTask = (): ReactElement => {
         try {
             if (selectedTask.body) {
                 const res = await (isNewTask(selectedTask) ? createTask() : addTask());
-
                 console.log(res);
             }
         } catch (err) {
@@ -158,9 +168,10 @@ export const AddTask = (): ReactElement => {
         setSelectedTask({ body: '' });
     }
     return (
-        <AddTaskStyle textEntered={!!selectedTask.body}>
+        <AddTaskStyle textEntered={!!selectedTask.body} open={isOpen && taskDisplay.length > 0}>
             <div {...getComboboxProps({ id: 'combobox' })}>
                 <TextField
+                    id="taskInput"
                     fullWidth
                     variant="outlined"
                     {...getInputProps({ value: selectedTask.body })}
@@ -178,7 +189,7 @@ export const AddTask = (): ReactElement => {
             </div>
             <ul {...getMenuProps()}>
                 {isOpen &&
-                    tasks.map((item, index) => (
+                    taskDisplay.map((item, index) => (
                         <li
                             style={highlightedIndex === index ? { backgroundColor: '#bde4ff' } : {}}
                             key={`${item.id}`}
@@ -187,6 +198,11 @@ export const AddTask = (): ReactElement => {
                             {item.body}
                         </li>
                     ))}
+                {isOpen && taskDisplay.length > 0 && (
+                    <li id="existingTitle">
+                        <h4>Existing Items</h4>
+                    </li>
+                )}
             </ul>
         </AddTaskStyle>
     );
@@ -200,17 +216,39 @@ const AddTaskStyle = styled.div<StyleProps>`
     /* position: fixed; */
     top: 3rem;
     width: 100%;
+    h4 {
+        font-size: 1.1rem;
+        color: var(--base-white);
+        text-align: center;
+    }
+    #existingTitle {
+        width: calc(100% - 0.4rem);
+        margin-left: -0.1rem;
+        margin-bottom: -0.3rem;
+        padding: 0.2rem;
+        background: #3f51b5;
+        border-radius: 0 0 4px 4px;
+        border: 0.1rem solid #3f51b5;
+    }
+    li {
+        padding: 0.3rem;
+    }
     ul {
+        width: 60%;
+        max-width: 35rem;
+        margin: 0;
+        padding: 0;
         position: fixed;
         list-style-type: none;
         z-index: 11;
+        background: var(--base-white);
+        border: ${(props) => (props.open ? '.15rem solid #3f51b5' : 'none')};
+        border-top: none;
+        transform: translateY(3.375rem);
+        border-radius: 0 0 4px 4px;
+    }
+    #taskInput {
         background: white;
-        transform: translateY(42px);
-        *:hover {
-            background: #ebafdc;
-        }
-        li {
-        }
     }
     @media (max-width: 375px) {
         top: 4.5rem;
@@ -224,14 +262,20 @@ const AddTaskStyle = styled.div<StyleProps>`
     #combobox {
         width: auto;
         display: flex;
-        background: white;
-
         max-width: 100rem;
         min-width: 250px;
         width: 80%;
+        .MuiTextField-root {
+            background: var(--base-white);
+            box-shadow: var(--box-shadow);
+            border-radius: 4px;
+        }
     }
     #taskInput {
         width: 100%;
+        /* * {
+            background: white;
+        } */
     }
     .addAdornment {
         width: 100%;

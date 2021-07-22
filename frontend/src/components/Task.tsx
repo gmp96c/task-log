@@ -78,13 +78,9 @@ export const Task: React.FC<TaskProps> = ({ task, setFocused, unfocused }: TaskP
     const { loading, data: logData } = useQuery<{ allLogs: LogConfig[] }>(GET_LOGS_FOR_TASK, {
         variables: {
             taskId: task.id,
+            userId: user?.id,
         },
     });
-    // useEffect(() => {
-    //     if (logData?.allLogs === undefined) {
-    //         return;
-    //     }
-    // }, [logData, logIndex]);
     console.log(logData);
     return (
         <TaskStyle unfocused={unfocused} logViewState={logViewState}>
@@ -229,12 +225,18 @@ const TaskStyle = styled.div<FocusedWrapperType>`
     max-width: 800px;
     width: 90%;
     text-align: center;
-    display: ${(props) => (props.unfocused ? 'none' : 'flex')};
-    /* grid-template-columns: 1fr 0.8fr 0.3fr auto; */
-    border: 1px solid black;
+    display: ${(props) => (props.unfocused ? 'none' : 'grid')};
+    grid-template-columns: 1fr 15% 5% auto;
+    border: 1px solid grey;
+    :hover {
+        border: 1px solid black;
+        background: var(--base-white-bright);
+    }
     border-radius: 2px;
     padding: 0.7rem;
     margin: 0.5rem;
+    background: var(--base-white);
+    box-shadow: var(--box-shadow);
     .logControls {
         display: flex;
         flex-direction: column;

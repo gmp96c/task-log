@@ -5,8 +5,11 @@ html {
 }
 body {
     --text-color: #232323;
-    --background-color: #efefef;
+    --base-white: #efefef;
+    --base-white-bright: #f5f5f5;
     --submit-color: green;
+    --base-grey: #d3d3d3;
+    --box-shadow: 0px 0px 3px 2px #bfbfbf;
     overflow-x: hidden;
     overflow-y: hidden;
     margin: 0;

@@ -33,24 +33,26 @@ export default function Layout({ children }) {
     };
     return (
         <MainLayout>
-            <header>
-                <h3>Daily Log</h3>
-                {userData?.authenticatedUser && (
-                    <>
-                        {/* <UserInfo info={userData} /> */}
-                        <h4>{userData?.authenticatedUser.name}</h4>
-                        <h4 id="logout" onClick={handleLogout}>
-                            Logout
-                        </h4>
-                    </>
-                )}
-            </header>
+            <div id="bar">
+                <header>
+                    <h3>Daily Log</h3>
+                    {userData?.authenticatedUser && (
+                        <>
+                            {/* <UserInfo info={userData} /> */}
+                            <h4>{userData?.authenticatedUser.name}</h4>
+                            <h4 id="logout" onClick={handleLogout}>
+                                Logout
+                            </h4>
+                        </>
+                    )}
+                </header>
+            </div>
             {children}
         </MainLayout>
     );
 }
 const MainLayout = styled.main`
-    background: var(--background-color);
+    background: var(--base-grey);
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -75,10 +77,16 @@ const MainLayout = styled.main`
         }
     }
     header {
+        margin: 0 auto;
         width: 90%;
         max-width: 900px;
         padding: 0.9rem;
         display: flex;
         align-items: center;
+    }
+    #bar {
+        width: 100%;
+        background: var(--base-white);
+        box-shadow: var(--box-shadow);
     }
 `;

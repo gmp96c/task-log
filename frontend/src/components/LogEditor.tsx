@@ -37,6 +37,7 @@ interface AddLogConfig {
 
 export const LogEditor: React.FC<AddLogConfig> = ({ task, mode, log, setToHistory, children }) => {
     const [editorState, setEditorState] = useState(EditorState.createEmpty());
+    const user = useContext(UserContext);
     const [addLog, { loading: addLoading, error: addError }] = useMutation(ADD_LOG, {
         variables: {
             body: JSON.stringify(convertToRaw(editorState.getCurrentContent())),
@@ -48,6 +49,7 @@ export const LogEditor: React.FC<AddLogConfig> = ({ task, mode, log, setToHistor
                     query: GET_LOGS_FOR_TASK,
                     variables: {
                         taskId: task.id,
+                        user: user?.id,
                     },
                 });
                 cache.writeQuery({
@@ -57,6 +59,7 @@ export const LogEditor: React.FC<AddLogConfig> = ({ task, mode, log, setToHistor
                     },
                     variables: {
                         taskId: task.id,
+                        user: user?.id,
                     },
                 });
             } catch (err) {

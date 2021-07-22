@@ -141,7 +141,6 @@ const LoginStyle = styled.main`
     height: 100%;
     width: 100%;
     box-sizing: border-box;
-    background: #d3d3d3;
     align-items: center;
     justify-content: center;
     #LoginError {
@@ -161,7 +160,7 @@ const LoginStyle = styled.main`
         display: flex;
         flex-direction: column;
         border-radius: 5px;
-        box-shadow: 3px 3px 5px 6px #bfbfbf;
+        box-shadow: var(--box-shadow);
         #loginHeader {
             text-align: center;
             padding: 0;

@@ -42,7 +42,7 @@ const TaskListStyle = styled.div`
     flex-direction: column;
     align-items: center;
     margin-top: 1rem;
-    overflow-y: scroll;
+    overflow-y: auto;
     flex-grow: 1;
     margin-bottom: 5rem;
     /* ::last-child {
