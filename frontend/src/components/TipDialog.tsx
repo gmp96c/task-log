@@ -34,6 +34,7 @@ export const TipDialog: React.FC<TipDialogConfig> = ({ tipOpen, setTipOpen, task
         variables: { id: task.id },
     });
     const [tipInput, setTipInput] = useState<string>('');
+    const [error, setError] = useState('');
     const processedData = useSearch<TipConfig>({
         data: data ? [...data.Task.tips] : [],
         keys: ['body'],
@@ -61,17 +62,21 @@ export const TipDialog: React.FC<TipDialogConfig> = ({ tipOpen, setTipOpen, task
         >
             <DialogTitle className="form-dialog-title">Tips</DialogTitle>
             <DialogContent>
-                <AddTip task={task} tipInput={tipInput}>
+                <AddTip task={task} tipInput={tipInput} setError={setError}>
                     <input
                         placeholder="Add New Tip"
                         aria-label="add new tip"
+                        className="tipInput"
                         value={tipInput}
                         onChange={(e) => {
+                            if (error) {
+                                setError('');
+                            }
                             setTipInput(e.target.value);
                         }}
                     />
                 </AddTip>
-                {loading ? (
+                {loading && (
                     <Loader
                         type="Puff"
                         color="#00BFFF"
@@ -79,16 +84,32 @@ export const TipDialog: React.FC<TipDialogConfig> = ({ tipOpen, setTipOpen, task
                         width={100}
                         timeout={3000} // 3 secs
                     />
-                ) : (
+                )}
+                {!loading && error && <h1>{error}</h1>}
+                {!loading && !error && (
                     <>
-                        {processedData.map((tip: TipConfig) => (
-                            <Tip
-                                key={tip.id}
-                                tip={tip}
-                                active={!!selected.map((el) => el.id).includes(tip.id)}
-                                task={task}
-                            />
-                        ))}
+                        {processedData
+                            .sort((a, b) => {
+                                const tipSet = new Set(task.tips.map((el) => el.id));
+                                if (tipSet.has(a.id) && tipSet.has(b.id)) {
+                                    return a._pinnedByMeta.count > b._pinnedByMeta.count ? 1 : -1;
+                                }
+                                if (!tipSet.has(a.id) && !tipSet.has(b.id)) {
+                                    return a._pinnedByMeta.count > b._pinnedByMeta.count ? 1 : -1;
+                                }
+                                if (tipSet.has(a.id)) {
+                                    return -1;
+                                }
+                                return 1;
+                            })
+                            .map((tip: TipConfig) => (
+                                <Tip
+                                    key={tip.id}
+                                    tip={tip}
+                                    active={!!selected.map((el) => el.id).includes(tip.id)}
+                                    task={task}
+                                />
+                            ))}
                     </>
                 )}
             </DialogContent>
@@ -101,14 +122,6 @@ export const TipDialog: React.FC<TipDialogConfig> = ({ tipOpen, setTipOpen, task
                 >
                     Cancel
                 </Button>
-                <Button
-                    onClick={() => {
-                        setTipOpen(false);
-                    }}
-                    color="primary"
-                >
-                    Subscribe
-                </Button>
             </DialogActions>
         </DialogStyled>
     );
@@ -120,5 +133,19 @@ const DialogStyled = styled(Dialog)`
         InputBase {
             flex-grow: 1;
         }
+    }
+    .MuiPaper-root {
+        min-height: 30rem;
+        max-height: 50rem;
+    }
+    .form-dialog-title {
+        text-align: center;
+    }
+    .tipInput {
+        border: none;
+        height: 100%;
+        margin: 0;
+        padding: 0.5rem;
+        flex-grow: 1;
     }
 `;

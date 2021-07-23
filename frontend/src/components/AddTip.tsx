@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import { gql, useMutation } from '@apollo/client';
 import AddIcon from '@material-ui/icons/Add';
+import styled from 'styled-components';
 import { TaskConfig, TipConfig, UserConfig } from '../Types';
 import { UserContext } from '../util/UserContextWrapper';
 import { GET_TASKS_QUERY, GET_TIPS } from '../util/Queries';
@@ -25,9 +26,10 @@ export const ADD_TIP = gql`
 interface AddTipConfig {
     task: TaskConfig;
     tipInput: string;
+    setError: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export const AddTip: React.FC<AddTipConfig> = ({ task, tipInput, children }) => {
+export const AddTip: React.FC<AddTipConfig> = ({ task, tipInput, setError, children }) => {
     const user = useContext(UserContext);
     const [addTip, addTipRes] = useMutation(ADD_TIP, {
         variables: {
@@ -66,23 +68,40 @@ export const AddTip: React.FC<AddTipConfig> = ({ task, tipInput, children }) => 
         },
     });
     function handleSubmit(e): void {
-        if (tipInput.length < 3) {
-            // TODO: add error message for bad task names
+        if (tipInput.length < 4) {
+            setError('Tips must be at least 4 characters.');
             return;
         }
-        if (tipInput.length > 140) {
-            // add error message for tip too long.
+        if (tipInput.length >= 120) {
+            setError('Tips must be below 120 characters');
             return;
         }
         e.preventDefault();
         addTip();
     }
     return (
-        <div>
+        <TipInputStyle>
             {children}
             <IconButton type="submit" aria-label="add" onClick={handleSubmit}>
                 <AddIcon />
             </IconButton>
-        </div>
+        </TipInputStyle>
     );
 };
+const TipInputStyle = styled.div`
+    border: 1px solid var(--base-grey);
+    font-size: 0.9rem;
+    margin: 0.5rem;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .MuiButtonBase-root {
+        padding: 0.5rem;
+    }
+    *,
+    *:focus,
+    *:hover {
+        outline: none;
+    }
+`;

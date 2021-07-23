@@ -158,7 +158,7 @@ const EditorStyle = styled.div`
     }
     .draft-editor {
         min-height: 10rem;
-        padding: 1rem;
+        padding: 0.5rem;
     }
     .saveButton {
         padding: 0.5rem;

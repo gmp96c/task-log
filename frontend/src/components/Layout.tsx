@@ -35,7 +35,7 @@ export default function Layout({ children }) {
         <MainLayout>
             <div id="bar">
                 <header>
-                    <h3>Daily Log</h3>
+                    <h3>Task Log</h3>
                     {userData?.authenticatedUser && (
                         <>
                             {/* <UserInfo info={userData} /> */}

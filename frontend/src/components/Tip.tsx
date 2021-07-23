@@ -2,6 +2,9 @@ import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { useMutation, gql, MutationUpdaterFn } from '@apollo/client';
 import Loader from 'react-loader-spinner';
+import { IconButton } from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
+import RemoveIcon from '@material-ui/icons/Remove';
 import { TaskConfig, TipConfig } from '../Types';
 import { UserContext } from '../util/UserContextWrapper';
 
@@ -74,7 +77,6 @@ export const Tip: React.FC<TipProps> = ({ tip, active, task }: TipProps) => {
             userId: user?.id,
         },
         update: (cache, { data }) => {
-            console.log('ran in dis');
             tipCacheUpdater(cache, { data });
         },
     });
@@ -84,7 +86,6 @@ export const Tip: React.FC<TipProps> = ({ tip, active, task }: TipProps) => {
             userId: user?.id,
         },
         update: (cache, { data }) => {
-            console.log('ran in con');
             tipCacheUpdater(cache, { data });
         },
     });
@@ -96,15 +97,30 @@ export const Tip: React.FC<TipProps> = ({ tip, active, task }: TipProps) => {
         }
     }
     return (
-        <TipStyle
-        className="tip" active={active} onClick={handleTipToggle}>
-            {tip.body}
+        <TipStyle className="tip" active={active} onClick={handleTipToggle}>
+            <p>{tip.body}</p>
+            {active ? <RemoveIcon /> : <AddIcon />}
         </TipStyle>
     );
 };
 const TipStyle = styled.div<ActiveWrapperType>`
-    font-size: 1rem;
+    font-size: 0.9rem;
     background: ${({ active }) => (active ? 'white' : 'grey')};
+    border: 1px solid var(--base-grey);
+    border-radius: 4px;
+    margin: 0.5rem;
+    padding: 0.5rem;
     cursor: pointer;
     user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 120%;
+    word-break: break-all;
+    p {
+        flex-grow: 1;
+        margin: 0;
+        padding: 0;
+        height: 100%;
+    }
 `;

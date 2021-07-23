@@ -74,10 +74,10 @@ export const AddTask = (): ReactElement => {
             if (cachedData === null || cachedData === undefined) {
                 return;
             }
-            const { User } = cachedData;
-            console.log(User.currentTasks);
-            console.log([...User.currentTasks, { ...task, tips: [] }]);
-            if (Array.isArray(User.currentTasks)) {
+            const {
+                User: { currentTasks },
+            } = cachedData;
+            if (Array.isArray(currentTasks) && task) {
                 cache.writeFragment({
                     id: `User:${user?.id}`,
                     fragment: gql`
@@ -87,7 +87,7 @@ export const AddTask = (): ReactElement => {
                     `,
                     data: {
                         currentTasks: [
-                            ...User.currentTasks.map((el) => ({ __ref: `Task:${el.id}` })),
+                            ...currentTasks.map((el) => ({ __ref: `Task:${el.id}` })),
                             { __ref: `Task:${task.id}` },
                         ],
                     },
