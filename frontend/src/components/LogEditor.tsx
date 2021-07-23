@@ -9,11 +9,10 @@ import draftToMarkdown from 'draftjs-to-markdown';
 import styled from 'styled-components';
 import { Editor } from 'react-draft-wysiwyg';
 import { convertToRaw, EditorState, ContentState, RichUtils, Modifier, convertFromRaw } from 'draft-js';
-import { GET_TASKS_QUERY, GET_TIPS } from '../util/Queries';
+import { GET_LOGS_FOR_TASK, GET_TASKS_QUERY, GET_TIPS } from '../util/Queries';
 
 import { UserContext } from '../util/UserContextWrapper';
 import { LogConfig, TaskConfig, UserConfig } from '../Types';
-import { GET_LOGS_FOR_TASK } from './Task';
 
 export const ADD_LOG = gql`
     mutation ADD_LOG($body: String!, $taskId: ID!) {
@@ -49,9 +48,15 @@ export const LogEditor: React.FC<AddLogConfig> = ({ task, mode, log, setToHistor
                     query: GET_LOGS_FOR_TASK,
                     variables: {
                         taskId: task.id,
-                        user: user?.id,
+                        userId: user?.id,
                     },
                 });
+                console.log({
+                    taskId: task.id,
+                    userId: user?.id,
+                });
+                console.log('old cache', oldLogs, `for task ${task.id}`);
+                console.log('new', newLog);
                 cache.writeQuery({
                     query: GET_LOGS_FOR_TASK,
                     data: {
@@ -59,7 +64,7 @@ export const LogEditor: React.FC<AddLogConfig> = ({ task, mode, log, setToHistor
                     },
                     variables: {
                         taskId: task.id,
-                        user: user?.id,
+                        userId: user?.id,
                     },
                 });
             } catch (err) {

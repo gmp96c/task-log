@@ -18,6 +18,7 @@ import { TaskConfig, TipConfig, ModeType, LogConfig } from '../Types';
 import { Tips } from './Tips';
 import { UserContext } from '../util/UserContextWrapper';
 import { LogEditor } from './LogEditor';
+import { GET_LOGS_FOR_TASK } from '../util/Queries';
 
 interface TaskProps {
     task: TaskConfig;
@@ -51,18 +52,7 @@ const REMOVE_TASK_MUTATION = gql`
         }
     }
 `;
-export const GET_LOGS_FOR_TASK = gql`
-    query GET_LOGS_FOR_TASK($taskId: ID!, $userId: ID!) {
-        allLogs(where: { task: { id: $taskId }, creator: { id: $userId } }, sortBy: createdAt_DESC) {
-            id
-            body
-            task {
-                id
-            }
-            createdAt
-        }
-    }
-`;
+
 export const Task: React.FC<TaskProps> = ({ task, setFocused, unfocused }: TaskProps) => {
     const user = useContext(UserContext);
     const [confirmOpen, setConfirmOpen] = useState(false);

@@ -34,3 +34,16 @@ export const GET_TIPS = gql`
         }
     }
 `;
+
+export const GET_LOGS_FOR_TASK = gql`
+    query GET_LOGS_FOR_TASK($taskId: ID!, $userId: ID!) {
+        allLogs(where: { task: { id: $taskId }, creator: { id: $userId } }, sortBy: createdAt_DESC) {
+            id
+            body
+            task {
+                id
+            }
+            createdAt
+        }
+    }
+`;

@@ -29,6 +29,7 @@ const ADD_TASK_MUTATION = gql`
             name
             id
             currentTasks {
+                id
                 body
             }
         }
@@ -62,6 +63,36 @@ export const AddTask = (): ReactElement => {
         variables: {
             taskId: selectedTask.id,
             userId: user?.id,
+        },
+        update: (cache, { data: task }) => {
+            const cachedData: { User: UserConfig } | null | undefined = cache.readQuery({
+                query: GET_TASKS_QUERY,
+                variables: {
+                    id: user?.id,
+                },
+            });
+            if (cachedData === null || cachedData === undefined) {
+                return;
+            }
+            const { User } = cachedData;
+            console.log(User.currentTasks);
+            console.log([...User.currentTasks, { ...task, tips: [] }]);
+            if (Array.isArray(User.currentTasks)) {
+                cache.writeFragment({
+                    id: `User:${user?.id}`,
+                    fragment: gql`
+                        fragment TaskUpdate on User {
+                            currentTasks
+                        }
+                    `,
+                    data: {
+                        currentTasks: [
+                            ...User.currentTasks.map((el) => ({ __ref: `Task:${el.id}` })),
+                            { __ref: `Task:${task.id}` },
+                        ],
+                    },
+                });
+            }
         },
     });
     const [taskDisplay, setTaskDisplay] = useState<TaskConfig[]>([]);
