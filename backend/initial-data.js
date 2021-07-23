@@ -111,11 +111,6 @@ module.exports = async (keystone) => {
                 ...Array.from(Array(10)).map(() => faker.lorem.sentence()),
             ].map((el) => createTip(el)),
         });
-        await createItems({
-            keystone,
-            listKey: 'Log',
-            items: Array.from(Array(1000)).map(() => createLog()),
-        });
     } catch (err) {
         console.log(err);
     }
