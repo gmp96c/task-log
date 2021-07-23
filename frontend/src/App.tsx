@@ -12,7 +12,7 @@ import { UserContextWrapper } from './util/UserContextWrapper';
 export const App: React.FC = () => {
     const { userLoading, isAuth, userData } = useAuth();
     if (userLoading) {
-        return <h1>loading</h1>;
+        return <Layout> </Layout>;
     }
     return (
         <Layout>

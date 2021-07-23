@@ -112,8 +112,21 @@ export const LogEditor: React.FC<AddLogConfig> = ({ task, mode, log, setToHistor
     }, [mode, log]);
     return (
         <EditorStyle>
+            <Editor
+                editorState={editorState}
+                readOnly={mode === 'History'}
+                wrapperClassName="draft-wrapper"
+                editorClassName="draft-editor"
+                onEditorStateChange={setEditorState}
+                toolbarHidden={mode === 'History'}
+                stripPastedStyles
+                toolbar={{
+                    options: ['blockType', 'fontSize', 'fontFamily', 'list', 'textAlign', 'link', 'image'],
+                }}
+            />
             {mode === 'Log' && (
                 <button
+                    className="saveButton"
                     type="button"
                     onClick={() => {
                         if (editorState.getCurrentContent().getPlainText()) {
@@ -127,29 +140,6 @@ export const LogEditor: React.FC<AddLogConfig> = ({ task, mode, log, setToHistor
                     Save Log
                 </button>
             )}
-            <Editor
-                editorState={editorState}
-                readOnly={mode === 'History'}
-                wrapperClassName="demo-wrapper"
-                editorClassName="demo-editor"
-                onEditorStateChange={setEditorState}
-                toolbarHidden={mode === 'History'}
-                stripPastedStyles
-                toolbar={{
-                    options: [
-                        'blockType',
-                        'fontSize',
-                        'fontFamily',
-                        'list',
-                        'textAlign',
-                        'colorPicker',
-                        'link',
-                        'embedded',
-                        'emoji',
-                        'image',
-                    ],
-                }}
-            />
         </EditorStyle>
     );
 };
@@ -157,4 +147,16 @@ const EditorStyle = styled.div`
     margin-top: 1rem;
     width: 100%;
     grid-column: 1 / 5;
+    .draft-wrapper {
+        background: white;
+        border: 1px solid black;
+    }
+    .draft-editor {
+        min-height: 10rem;
+        padding: 1rem;
+    }
+    .saveButton {
+        padding: 0.5rem;
+        margin-top: 0.5rem;
+    }
 `;

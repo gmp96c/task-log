@@ -27,7 +27,7 @@ interface AddTipConfig {
     tipInput: string;
 }
 
-export const AddTip: React.FC<AddTipConfig> = ({ task, tipInput, children}) => {
+export const AddTip: React.FC<AddTipConfig> = ({ task, tipInput, children }) => {
     const user = useContext(UserContext);
     const [addTip, addTipRes] = useMutation(ADD_TIP, {
         variables: {
@@ -67,7 +67,11 @@ export const AddTip: React.FC<AddTipConfig> = ({ task, tipInput, children}) => {
     });
     function handleSubmit(e): void {
         if (tipInput.length < 3) {
-            //TODO: add error message for bad task names
+            // TODO: add error message for bad task names
+            return;
+        }
+        if (tipInput.length > 140) {
+            // add error message for tip too long.
             return;
         }
         e.preventDefault();
@@ -75,7 +79,7 @@ export const AddTip: React.FC<AddTipConfig> = ({ task, tipInput, children}) => {
     }
     return (
         <div>
-           {children}
+            {children}
             <IconButton type="submit" aria-label="add" onClick={handleSubmit}>
                 <AddIcon />
             </IconButton>

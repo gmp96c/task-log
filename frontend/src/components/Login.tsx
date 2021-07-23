@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { TextField, Button } from '@material-ui/core';
+import { TextField, Button, CircularProgress } from '@material-ui/core';
 import { useMutation, gql } from '@apollo/client';
 import { CURRENT_USER_QUERY } from '../hooks/useAuth';
 
@@ -45,8 +45,8 @@ export const Login: React.FC = () => {
                     if (name.length < 3) {
                         throw new Error('Please set a username over 3 characters');
                     }
-                    if (password.length < 6) {
-                        throw new Error('Please make your password longer than 6 characters.');
+                    if (password.length < 8) {
+                        throw new Error('Please make your password longer than 8 characters.');
                     }
                     if (confirmPassword !== password) {
                         throw new Error('Your passwords do not match.');
@@ -70,68 +70,71 @@ export const Login: React.FC = () => {
         <LoginStyle>
             <form id="loginBody">
                 <h2 id="loginHeader"> {signUp ? 'Sign Up' : 'Login'}</h2>
-                {!mutationLoading ? (
-                    <>
-                        {signUp && (
-                            <TextField
-                                className="loginInput"
-                                label="Name"
-                                type="input"
-                                value={name}
-                                onChange={(e) => {
-                                    setName(e.target.value);
-                                }}
-                            />
-                        )}
+
+                <>
+                    {signUp && (
                         <TextField
                             className="loginInput"
-                            label="Email"
-                            type="email"
-                            value={email}
+                            label="Name"
+                            type="input"
+                            value={name}
                             onChange={(e) => {
-                                setEmail(e.target.value);
+                                setName(e.target.value);
                             }}
                         />
+                    )}
+                    <TextField
+                        className="loginInput"
+                        label="Email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => {
+                            setEmail(e.target.value);
+                        }}
+                    />
+                    <TextField
+                        className="loginInput"
+                        label="Password"
+                        type="password"
+                        autoComplete="current-password"
+                        value={password}
+                        onChange={(e) => {
+                            setPassword(e.target.value);
+                        }}
+                    />
+                    {signUp && (
                         <TextField
                             className="loginInput"
-                            label="Password"
+                            label="Confirm Password"
                             type="password"
-                            autoComplete="current-password"
-                            value={password}
+                            value={confirmPassword}
                             onChange={(e) => {
-                                setPassword(e.target.value);
+                                setConfirmPassword(e.target.value);
                             }}
                         />
-                        {signUp && (
-                            <TextField
-                                className="loginInput"
-                                label="Confirm Password"
-                                type="password"
-                                value={confirmPassword}
-                                onChange={(e) => {
-                                    setConfirmPassword(e.target.value);
-                                }}
-                            />
+                    )}
+                    <div id="loginControl">
+                        {mutationLoading || signupLoading ? (
+                            <CircularProgress />
+                        ) : (
+                            <>
+                                <Button
+                                    color="primary"
+                                    onClick={() => {
+                                        setError('');
+                                        setSignUp(!signUp);
+                                    }}
+                                >
+                                    {!signUp ? 'Sign Up' : 'Login'}
+                                </Button>
+                                <Button variant="contained" color="secondary" onClick={submitHandler}>
+                                    {signUp ? 'Sign Up' : 'Login'}
+                                </Button>
+                            </>
                         )}
-                        <div id="loginControl">
-                            <Button
-                                color="primary"
-                                onClick={() => {
-                                    setError('');
-                                    setSignUp(!signUp);
-                                }}
-                            >
-                                {!signUp ? 'Sign Up' : 'Login'}
-                            </Button>
-                            <Button variant="contained" color="secondary" onClick={submitHandler}>
-                                {signUp ? 'Sign Up' : 'Login'}
-                            </Button>
-                        </div>
-                        {error && <h4 id="LoginError">{error}</h4>}
-                    </>
-                ) : (
-                    <h3>Loading</h3>
-                )}
+                    </div>
+                    {error && <h4 id="LoginError">{error}</h4>}
+                </>
             </form>
         </LoginStyle>
     );
@@ -141,6 +144,7 @@ const LoginStyle = styled.main`
     height: 100%;
     width: 100%;
     box-sizing: border-box;
+    background: #d3d3d3;
     align-items: center;
     justify-content: center;
     #LoginError {
@@ -176,6 +180,9 @@ const LoginStyle = styled.main`
             /* margin-top: 1rem; */
             display: flex;
             justify-content: space-between;
+            div {
+                margin: 0 auto;
+            }
         }
     }
 `;

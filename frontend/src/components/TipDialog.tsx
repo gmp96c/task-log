@@ -46,9 +46,9 @@ export const TipDialog: React.FC<TipDialogConfig> = ({ tipOpen, setTipOpen, task
             refetch();
         }
     }, [tipOpen]);
-    useEffect(()=>{
-      setTipInput('');
-    },[data?.Task?.tips])
+    useEffect(() => {
+        setTipInput('');
+    }, [data?.Task?.tips]);
     return (
         <DialogStyled
             open={tipOpen}
@@ -62,15 +62,15 @@ export const TipDialog: React.FC<TipDialogConfig> = ({ tipOpen, setTipOpen, task
             <DialogTitle className="form-dialog-title">Tips</DialogTitle>
             <DialogContent>
                 <AddTip task={task} tipInput={tipInput}>
-                   <input
-                placeholder="Add New Tip"
-                aria-label="add new tip"
-                value={tipInput}
-                onChange={(e) => {
-                    setTipInput(e.target.value);
-                }}
-            ></input>
-            </AddTip>
+                    <input
+                        placeholder="Add New Tip"
+                        aria-label="add new tip"
+                        value={tipInput}
+                        onChange={(e) => {
+                            setTipInput(e.target.value);
+                        }}
+                    />
+                </AddTip>
                 {loading ? (
                     <Loader
                         type="Puff"
@@ -93,12 +93,11 @@ export const TipDialog: React.FC<TipDialogConfig> = ({ tipOpen, setTipOpen, task
                 )}
             </DialogContent>
             <DialogActions>
-
                 <Button
                     onClick={() => {
                         setTipOpen(false);
                     }}
-                    color=  "primary"
+                    color="primary"
                 >
                     Cancel
                 </Button>

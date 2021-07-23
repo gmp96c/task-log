@@ -138,7 +138,7 @@ export const Task: React.FC<TaskProps> = ({ task, setFocused, unfocused }: TaskP
                 />
             )}
             {mode === 'History' && !loading && logData?.allLogs[0]?.createdAt && (
-                <>
+                <div className="historyControls">
                     <button
                         title="back a log"
                         type="button"
@@ -174,7 +174,7 @@ export const Task: React.FC<TaskProps> = ({ task, setFocused, unfocused }: TaskP
                     >
                         Next
                     </button>
-                </>
+                </div>
             )}
             {['Log', 'History'].includes(mode) && !loading && (
                 <LogEditor
@@ -226,7 +226,8 @@ const TaskStyle = styled.div<FocusedWrapperType>`
     width: 90%;
     text-align: center;
     display: ${(props) => (props.unfocused ? 'none' : 'grid')};
-    grid-template-columns: 1fr 15% 5% auto;
+    grid-template-columns: 1fr 25% 10% auto;
+    grid-gap: 0.5rem;
     border: 1px solid grey;
     :hover {
         border: 1px solid black;
@@ -275,5 +276,13 @@ const TaskStyle = styled.div<FocusedWrapperType>`
     }
     li {
         list-style-type: none;
+    }
+    .historyControls {
+        grid-column: 1 / 5;
+        align-items: center;
+        button {
+            margin: 0 1rem;
+            padding: 0.2rem;
+        }
     }
 `;

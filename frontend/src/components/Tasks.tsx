@@ -12,28 +12,26 @@ export const Tasks = (): ReactElement => {
         variables: { id: user?.id },
     });
     const [focused, setFocused] = useState<string | null>(null);
-    if (loading || data?.User?.currentTasks === undefined) {
-        return <h2>loading</h2>;
-    }
     return (
         <TaskListStyle>
-            {data.User.currentTasks
-                .slice()
-                .reverse()
-                .map((task: TaskConfig) => (
-                    <Task
-                        key={task.id}
-                        task={task}
-                        setFocused={(focusing = true): void => {
-                            if (focusing) {
-                                setFocused(task.id);
-                            } else {
-                                setFocused(null);
-                            }
-                        }}
-                        unfocused={focused === null ? false : focused !== task.id}
-                    />
-                ))}
+            {!(loading || data?.User?.currentTasks === undefined) &&
+                data.User.currentTasks
+                    .slice()
+                    .reverse()
+                    .map((task: TaskConfig) => (
+                        <Task
+                            key={task.id}
+                            task={task}
+                            setFocused={(focusing = true): void => {
+                                if (focusing) {
+                                    setFocused(task.id);
+                                } else {
+                                    setFocused(null);
+                                }
+                            }}
+                            unfocused={focused === null ? false : focused !== task.id}
+                        />
+                    ))}
         </TaskListStyle>
     );
 };

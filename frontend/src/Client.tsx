@@ -2,12 +2,12 @@ import { ApolloProvider, ApolloClient, InMemoryCache, createHttpLink } from '@ap
 // import 'cross-fetch/polyfill';
 
 const link = createHttpLink({
-  uri: process.env.KEYSTONE_URI,
-  credentials: 'include',
-  fetch: (...args) => fetch(...args),
+    uri: process.env.KEYSTONE_URI,
+    credentials: 'include',
+    fetch: (...args) => fetch(...args),
 });
 
 export const client = new ApolloClient({
-  link,
-  cache: new InMemoryCache(),
+    link,
+    cache: new InMemoryCache(),
 });

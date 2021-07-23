@@ -11,7 +11,7 @@ export const Tips: React.FC<TipProps> = ({ task, mode }: TipProps) => {
     const [tipOpen, setTipOpen] = useState(false);
     return (
         <TipStyle className="tipContainer">
-            <header>{!!(task.tips.length > 0 || mode !== 'Base') && <h5>Tips</h5>}</header>
+            <header>{!(task.tips.length === 0 && ['Base', 'Log', 'History'].includes(mode)) && <h5>Tips</h5>}</header>
             <ul>
                 {[...task.tips]
                     .sort((a, b) => (a._pinnedByMeta.count > b._pinnedByMeta.count ? 1 : -1))
@@ -33,7 +33,6 @@ export const Tips: React.FC<TipProps> = ({ task, mode }: TipProps) => {
                 </button>
             )}
             {tipOpen && <TipDialog selected={task.tips} tipOpen={tipOpen} setTipOpen={setTipOpen} task={task} />}
-            {/* //TODO:Add/search tip input */}
         </TipStyle>
     );
 };
