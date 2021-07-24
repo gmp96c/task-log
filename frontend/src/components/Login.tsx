@@ -21,8 +21,8 @@ const SIGNUP_MUTATION = gql`
 `;
 
 export const Login: React.FC = () => {
-    const [email, setEmail] = useState('real@email.com');
-    const [password, setPassword] = useState('test12314');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [signUp, setSignUp] = useState(false);
     const [error, setError] = useState('');
