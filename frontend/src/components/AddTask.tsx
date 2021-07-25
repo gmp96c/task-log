@@ -158,6 +158,7 @@ export const AddTask = (): ReactElement => {
         items: taskDisplay,
         itemToString: (item: TaskConfig | null) => item?.body || '',
         onStateChange: ({ inputValue, type, ...val }) => {
+            console.log('stateChange', inputValue, val);
             if ((type === '__input_change__' && inputValue) || inputValue === '') {
                 if (inputValue === variables?.searchString) {
                     return;
@@ -206,8 +207,8 @@ export const AddTask = (): ReactElement => {
                     variant="outlined"
                     {...getInputProps()}
                     placeholder="Add a new task"
+                    value={selectedTask.body}
                     InputProps={{
-                        value: selectedTask.body,
                         endAdornment: (
                             <InputAdornment position="end">
                                 <Button className="addAdornment" type="submit" onClick={handleSubmit}>
