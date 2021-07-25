@@ -204,6 +204,7 @@ export const AddTask = (): ReactElement => {
         setSelectedTask({ body: '' });
         reset();
     }
+    console.log(selectedTask.body);
     return (
         <AddTaskStyle textEntered={!!selectedTask.body} open={isOpen && taskDisplay.length > 0}>
             <div
@@ -216,6 +217,9 @@ export const AddTask = (): ReactElement => {
                     fullWidth
                     variant="outlined"
                     {...getInputProps({ refKey: 'inputRef' })}
+                    onChange={(e) => {
+                        setSelectedTask({ body: e.target.value });
+                    }}
                     placeholder="Add a new task"
                     InputProps={{
                         endAdornment: (
