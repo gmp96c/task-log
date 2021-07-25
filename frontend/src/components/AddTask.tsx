@@ -200,14 +200,17 @@ export const AddTask = (): ReactElement => {
     }
     return (
         <AddTaskStyle textEntered={!!selectedTask.body} open={isOpen && taskDisplay.length > 0}>
-            <div {...getComboboxProps({ id: 'combobox' })}>
+            <div
+                {...getComboboxProps({
+                    id: 'combobox',
+                })}
+            >
                 <TextField
                     id="taskInput"
                     fullWidth
                     variant="outlined"
-                    {...getInputProps()}
+                    {...getInputProps({ refKey: 'inputRef', value: selectedTask.body })}
                     placeholder="Add a new task"
-                    value={selectedTask.body}
                     InputProps={{
                         endAdornment: (
                             <InputAdornment position="end">
