@@ -105,7 +105,7 @@ export const Tip: React.FC<TipProps> = ({ tip, active, task }: TipProps) => {
 };
 const TipStyle = styled.div<ActiveWrapperType>`
     font-size: 0.9rem;
-    background: ${({ active }) => (active ? 'white' : 'grey')};
+    background: ${({ active }) => (active ? 'white' : 'var(--base-grey-bright)')};
     border: 1px solid var(--base-grey);
     border-radius: 4px;
     margin: 0.5rem;

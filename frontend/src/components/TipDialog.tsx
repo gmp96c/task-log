@@ -76,15 +76,7 @@ export const TipDialog: React.FC<TipDialogConfig> = ({ tipOpen, setTipOpen, task
                         }}
                     />
                 </AddTip>
-                {loading && (
-                    <Loader
-                        type="Puff"
-                        color="#00BFFF"
-                        height={100}
-                        width={100}
-                        timeout={3000} // 3 secs
-                    />
-                )}
+                {processedData.length > 0 && <hr />}
                 {!loading && error && <h1>{error}</h1>}
                 {!loading && !error && (
                     <>
@@ -133,6 +125,12 @@ const DialogStyled = styled(Dialog)`
         InputBase {
             flex-grow: 1;
         }
+    }
+    hr {
+        margin: 0 0.5rem;
+        height: 0.1rem;
+        background: var(--base-grey-dark);
+        border: none;
     }
     .MuiPaper-root {
         min-height: 30rem;
