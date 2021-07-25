@@ -154,6 +154,7 @@ export const AddTask = (): ReactElement => {
         getComboboxProps,
         highlightedIndex,
         getItemProps,
+        reset,
     } = useCombobox({
         items: taskDisplay,
         itemToString: (item: TaskConfig | null) => item?.body || '',
@@ -197,6 +198,7 @@ export const AddTask = (): ReactElement => {
             console.error(err);
         }
         setSelectedTask({ body: '' });
+        reset();
     }
     return (
         <AddTaskStyle textEntered={!!selectedTask.body} open={isOpen && taskDisplay.length > 0}>
