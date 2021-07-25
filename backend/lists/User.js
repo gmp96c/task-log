@@ -18,6 +18,7 @@ module.exports = {
             access: {
                 update: access.userIsAdmin,
             },
+            defaultValue: () => false,
         },
         password: {
             type: Password,
