@@ -21,7 +21,7 @@ export const Tips: React.FC<TipProps> = ({ task, mode }: TipProps) => {
                         </li>
                     ))}
             </ul>
-            {['Settings', 'Log'].includes('mode') && (
+            {['Settings', 'Log'].includes(mode) && (
                 <button
                     type="button"
                     onClick={() => {
