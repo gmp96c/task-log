@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import { Button, InputAdornment, TextField } from '@material-ui/core';
-import React, { ReactElement, useState, useContext } from 'react';
+import React, { ReactElement, useState, useContext, useEffect } from 'react';
 import { gql, useLazyQuery, useMutation } from '@apollo/client';
 import { useCombobox } from 'downshift';
 import debounce from 'lodash.debounce';
@@ -155,6 +155,7 @@ export const AddTask = (): ReactElement => {
         highlightedIndex,
         getItemProps,
         reset,
+        setInputValue,
     } = useCombobox({
         items: taskDisplay,
         itemToString: (item: TaskConfig | null) => item?.body || '',
@@ -187,6 +188,9 @@ export const AddTask = (): ReactElement => {
             }
         },
     });
+    useEffect(() => {
+        setInputValue(selectedTask.body);
+    }, [selectedTask.body]);
     async function handleSubmit(e): Promise<void> {
         e.preventDefault();
         try {
