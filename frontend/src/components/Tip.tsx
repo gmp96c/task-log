@@ -116,7 +116,7 @@ const TipStyle = styled.div<ActiveWrapperType>`
     align-items: center;
     justify-content: center;
     line-height: 120%;
-    word-break: break-all;
+    word-break: break-word;
     p {
         flex-grow: 1;
         margin: 0;

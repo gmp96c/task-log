@@ -39,7 +39,7 @@ export const Tips: React.FC<TipProps> = ({ task, mode }: TipProps) => {
 const TipStyle = styled.div`
     display: flex;
     flex-direction: column;
-    word-break: break-all;
+    word-break: break-word;
     width: 100%;
 
     /* max-width: 35%;
