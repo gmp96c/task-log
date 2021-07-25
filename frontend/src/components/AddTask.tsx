@@ -144,6 +144,7 @@ export const AddTask = (): ReactElement => {
         }
         return dupes[0];
     }
+
     const {
         isOpen,
         selectedItem,
@@ -156,13 +157,17 @@ export const AddTask = (): ReactElement => {
         getItemProps,
         reset,
         setInputValue,
+        openMenu,
+        closeMenu,
     } = useCombobox({
         items: taskDisplay,
         itemToString: (item: TaskConfig | null) => item?.body || '',
         onStateChange: ({ inputValue, type, ...val }) => {
             console.log('stateChange', inputValue, val);
-            if ((type === '__input_change__' && inputValue) || inputValue === '') {
+            console.log(type);
+            if ((type === '__function_set_input_value__' && inputValue) || inputValue === '') {
                 if (inputValue === variables?.searchString) {
+                    console.log('here');
                     return;
                 }
                 const dupe = getDuplicateTask(taskDisplay, inputValue);
@@ -189,14 +194,17 @@ export const AddTask = (): ReactElement => {
         },
     });
     useEffect(() => {
-        setInputValue(selectedTask.body);
+        if (selectedTask.body && !isOpen) {
+            openMenu();
+        } else if (selectedTask.body === '' && isOpen) {
+            closeMenu();
+        }
     }, [selectedTask.body]);
     async function handleSubmit(e): Promise<void> {
         e.preventDefault();
         try {
             if (selectedTask.body) {
                 const res = await (isNewTask(selectedTask) ? createTask() : addTask());
-                console.log(res);
             }
         } catch (err) {
             console.error(err);
@@ -204,7 +212,6 @@ export const AddTask = (): ReactElement => {
         setSelectedTask({ body: '' });
         reset();
     }
-    console.log(selectedTask.body);
     return (
         <AddTaskStyle textEntered={!!selectedTask.body} open={isOpen && taskDisplay.length > 0}>
             <div
@@ -218,7 +225,7 @@ export const AddTask = (): ReactElement => {
                     variant="outlined"
                     {...getInputProps({ refKey: 'inputRef' })}
                     onChange={(e) => {
-                        setSelectedTask({ body: e.target.value });
+                        setInputValue(e.target.value);
                     }}
                     placeholder="Add a new task"
                     InputProps={{
