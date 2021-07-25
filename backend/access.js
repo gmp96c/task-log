@@ -16,4 +16,11 @@ const userIsAdminOrOwner = (auth) => {
     return isAdmin || !!isOwner;
 };
 const access = { userIsAdmin, userOwnsItem, userIsAdminOrOwner, userExists };
+
+// const access = {
+//     userIsAdmin: () => true,
+//     userOwnsItem: () => true,
+//     userIsAdminOrOwner: () => true,
+//     userExists: () => true,
+// };
 module.exports = { access };

@@ -52,9 +52,7 @@ module.exports = (keystone) => ({
                     keystone,
                     listKey: 'User',
                     item: {
-                        id:
-                            context?.authedItem?.id ||
-                            Math.floor(Math.random() * 3) + 1,
+                        id: context?.authedItem?.id,
                         data: {
                             currentTasks: { connect: [{ id: updatedItem.id }] },
                         },

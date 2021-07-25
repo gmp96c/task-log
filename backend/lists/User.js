@@ -4,9 +4,10 @@ const {
     Text,
     Relationship,
 } = require('@keystonejs/fields');
+const { updateItem } = require('@keystonejs/server-side-graphql-client');
 const { access } = require('../access.js');
 
-module.exports = {
+module.exports = (keystone) => ({
     fields: {
         name: { type: Text },
         email: {
@@ -47,14 +48,21 @@ module.exports = {
         delete: access.userIsAdmin,
         auth: true,
     },
-    // hooks: {
-    //   resolveInput: async function({operation, context, originalInput, resolvedData, ...rest }){      // console.log({operation, context, originalInput, resolvedData, ...rest });
-    //     if(operation === 'update'){
-    //       // console.log('context',context);
-    //       // console.log('originalInput',originalInput);
-    //     }
-    //     // console.log(resolvedData);
-    //     return resolvedData;
-    //   }
-    // }
-};
+    hooks: {
+        async afterChange({ operation, context, updatedItem }) {
+            if (operation === 'create') {
+                const updatedUser = await updateItem({
+                    keystone,
+                    listKey: 'User',
+                    item: {
+                        id: updatedItem.id,
+                        data: {
+                            currentTasks: { connect: [{ id: 2 }] },
+                            pinnedTips: { connect: [{ id: 2 }] },
+                        },
+                    },
+                });
+            }
+        },
+    },
+});

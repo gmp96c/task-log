@@ -14,7 +14,6 @@ require('dotenv').config();
 
 const PROJECT_NAME = 'task-log';
 const adapterConfig = {
-    dropDatabase: true,
     knexOptions: {
         client: 'pg',
         connection: {
@@ -42,7 +41,7 @@ const keystone = new Keystone({
         checkPeriod: 86400000, // prune expired entries every 24h
     }),
 });
-keystone.createList('User', UserSchema);
+keystone.createList('User', UserSchema(keystone));
 keystone.createList('Log', LogSchema);
 keystone.createList('Task', TaskSchema(keystone));
 keystone.createList('Tip', TipSchema);
@@ -59,6 +58,9 @@ module.exports = {
             name: PROJECT_NAME,
             enableDefaultRoute: true,
             authStrategy,
+            isAccessAllowed: ({
+                authentication: { item: user, listKey: list },
+            }) => !!user && !!user.isAdmin,
         }),
     ],
 };

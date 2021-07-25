@@ -20,18 +20,18 @@ module.exports = async (keystone) => {
     });
 
     // if (count === 0) {
-    //     const password = 'testtest';
-    //     const email = 't@t.t';
+    const password = 'testtest';
+    const email = 't@t.t';
 
-    //     const { errors } = await keystone.executeGraphQL({
-    //         context: keystone.createContext({ skipAccessControl: true }),
-    //         query: `mutation initialUser($password: String, $email: String) {
-    //         createUser(data: {name: "Admin", email: $email, isAdmin: true, password: $password}) {
-    //           id
-    //         }
-    //       }`,
-    //         variables: { password, email },
-    //     });
+    const { errors } = await keystone.executeGraphQL({
+        context: keystone.createContext({ skipAccessControl: true }),
+        query: `mutation initialUser($password: String, $email: String) {
+            createUser(data: {name: "Admin", email: $email, isAdmin: true, password: $password}) {
+              id
+            }
+          }`,
+        variables: { password, email },
+    });
 
     //     if (errors) {
     //         console.log('failed to create initial user:');
