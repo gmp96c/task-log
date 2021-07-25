@@ -52,7 +52,6 @@ export const Login: React.FC = () => {
                         throw new Error('Your passwords do not match.');
                     }
                 } catch (err) {
-                    console.log('setting a');
                     setError(err.message);
                     return;
                 }
@@ -61,7 +60,6 @@ export const Login: React.FC = () => {
                 const loginRes = await doLogin();
             }
         } catch (err) {
-            console.log('setting b');
             setError(signUp ? 'Invalid Signup Info' : 'Invalid Login Info');
         }
     };

@@ -180,7 +180,6 @@ export const AddTask = (): ReactElement => {
             }
         },
         onSelectedItemChange: ({ selectedItem: item }) => {
-            console.log('running selected');
             if (item) {
                 setSelectedTask(item);
             }
@@ -205,9 +204,10 @@ export const AddTask = (): ReactElement => {
                     id="taskInput"
                     fullWidth
                     variant="outlined"
-                    {...getInputProps({ value: selectedTask.body })}
+                    {...getInputProps()}
                     placeholder="Add a new task"
                     InputProps={{
+                        value: selectedTask.body,
                         endAdornment: (
                             <InputAdornment position="end">
                                 <Button className="addAdornment" type="submit" onClick={handleSubmit}>

@@ -51,12 +51,6 @@ export const LogEditor: React.FC<AddLogConfig> = ({ task, mode, log, setToHistor
                         userId: user?.id,
                     },
                 });
-                console.log({
-                    taskId: task.id,
-                    userId: user?.id,
-                });
-                console.log('old cache', oldLogs, `for task ${task.id}`);
-                console.log('new', newLog);
                 cache.writeQuery({
                     query: GET_LOGS_FOR_TASK,
                     data: {
@@ -77,9 +71,6 @@ export const LogEditor: React.FC<AddLogConfig> = ({ task, mode, log, setToHistor
     // }
     useEffect(() => {
         if (addError !== undefined) {
-            console.log(JSON.stringify(addError));
-            console.log('hi');
-            console.log(Object.values(addError?.networkError));
             if (addError.networkError && Object.values(addError.networkError).includes(413)) {
                 alert('Log exceeds maximum length, please shorten or use multiple logs. ');
             }
@@ -109,7 +100,6 @@ export const LogEditor: React.FC<AddLogConfig> = ({ task, mode, log, setToHistor
         setEditorState(getResetEditorState(editorState));
     }
     useEffect(() => {
-        console.log(log);
         clearEditorState();
         if (mode === 'History' && log?.body !== undefined) {
             setEditorState(EditorState.createWithContent(convertFromRaw(JSON.parse(log.body))));

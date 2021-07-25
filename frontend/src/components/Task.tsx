@@ -71,7 +71,6 @@ export const Task: React.FC<TaskProps> = ({ task, setFocused, unfocused }: TaskP
             userId: user?.id,
         },
     });
-    console.log(logData);
     return (
         <TaskStyle unfocused={unfocused} logViewState={logViewState}>
             <h4>{task.body}</h4>

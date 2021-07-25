@@ -22,7 +22,6 @@ export default function Layout({ children }) {
     const handleLogout = () => {
         doLogout()
             .then((res) => {
-                console.log(res);
                 if (res.data.success) {
                     console.log('loggedOut');
                 }
