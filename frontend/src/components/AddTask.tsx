@@ -165,7 +165,7 @@ export const AddTask = (): ReactElement => {
         onStateChange: ({ inputValue, type, ...val }) => {
             console.log('stateChange', inputValue, val);
             console.log(type);
-            if ((type === '__function_set_input_value__' && inputValue) || inputValue === '') {
+            if (((type === '__function_set_input_value__' || type === 17) && inputValue) || inputValue === '') {
                 if (inputValue === variables?.searchString) {
                     console.log('here');
                     return;
