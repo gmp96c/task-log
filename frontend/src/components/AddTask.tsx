@@ -194,7 +194,7 @@ export const AddTask = (): ReactElement => {
         },
     });
     useEffect(() => {
-        if (selectedTask.body && !isOpen) {
+        if (selectedTask.body && !isOpen && !selectedTask?.id) {
             openMenu();
         } else if (selectedTask.body === '' && isOpen) {
             closeMenu();
