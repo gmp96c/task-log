@@ -209,7 +209,7 @@ export const AddTask = (): ReactElement => {
                     id="taskInput"
                     fullWidth
                     variant="outlined"
-                    {...getInputProps({ refKey: 'inputRef', value: selectedTask.body })}
+                    {...getInputProps({ refKey: 'inputRef' })}
                     placeholder="Add a new task"
                     InputProps={{
                         endAdornment: (
