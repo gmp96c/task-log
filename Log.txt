@@ -1,0 +1,71 @@
+Keep an outline of things going on so I can make sure I remember when I get back to it.
+Current status is having the delete function work, it requires the User ID to process the request and I'm going to have it auto-include on requests missing it for the current user on the backend.
+
+Delete working, I am just passing user down as a prop since oyu can't set defaults for graphql queries like that, works much better this way honestly. Caching works as well is pretty nice.
+Next task is getting adding new/old tasks working and updating the cache.
+
+Got adding existing ones working by updating user, still need to have adding new tasks update the cache. Will do that tomorrow.
+
+Adding/delete tasks in all methods updates the cache properly, next add tip functionality?
+
+Tips relations is broken fix that.
+
+Fixed tip relations, also set up the basic modes I will use for the layout. Next task is to complete each mode or figure more out current plan is.
+One each individual task have
+-Base mode, what there is now, maybe different controls
+-Settings mode, delete/edit Tips
+
+
+Also a global history for logs including on removed tasks
+
+Dropping d/b to change any info will be annoying, setting up some initial data that I can just use instead
+
+Disable authed relationships and some hooks for data initilization
+
+I got the tip display working next two tasks in order to do are
+
+Set up the tip component so you can click to add/remove it -- DONE
+have pinned by count modify when people do that -- DONE
+
+When that's all done work on logs/history I guess?
+
+Get access control for tip pinned by working - This works, add count now.
+
+Just using meta tag for pinned by all taht's done, cping whats left above.
+
+have area to add Tips
+Figure out how to show list, change functionality when people add/search
+Search bar on top filters, same click to activate/disable functionality, and add adds it to list below
+
+Adding tips adds to cache on task view, but not in TIp dialog, tip dialog cache edit in progress
+
+Got tip caching working, and fixed a bug with disabling an active task. Using a similar cache update function for both made updating them pretty easy. Diving into apollo dev tools really helps to clarify things remember to do that for any future issues.
+
+Basic tip functionality is done I think? Count is handled by meta, cache works for both. Going to move down the todo list again, oops need to add filter, okay got that added in a really nice hook.
+
+-Add Log mode, obvious
+-View logs, view history of all your logs related to this task.
+-Maybe add option to delete your create tips? Maybe not.
+-unit testing? Might be good before moving into the log views
+I'll work on adding the log views
+
+Seems like a good time to get unit tests set up before the additional complexity of the log page.
+
+Realized I still hadn't made the sign up page after test work to do is -
+-Add Log mode, obvious DONE
+-View logs, view history of all your logs related to this task. DONE
+-Create error for if log is too long, find smaller ways to store? DONE1
+
+-Sign up
+Just this then style I reckon?
+
+pulling logs for all users, change log query to get from user? Change acl on log read if that's the case.
+
+Everything is working as far as I can tell, just styles now really.
+
+I think it's good for a basic release to get people using it, still needs some tidying up but I think all the functionality basically works. Need to clean up and make some decent data.
+Immediate thing will be figuring out a hosting solution, looking at render.com.
+
+Post release:
+Remove active tasks from add new task search.
+More testing, E2E and unit.
