@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { TextField, Button, CircularProgress } from '@material-ui/core';
+import { TextField, Button, CircularProgress, createMuiTheme, ThemeProvider } from '@material-ui/core';
 import { useMutation, gql } from '@apollo/client';
+import { green, indigo } from '@material-ui/core/colors';
 import { CURRENT_USER_QUERY } from '../hooks/useAuth';
 
 export const SIGNIN_MUTATION = gql`
@@ -19,6 +20,12 @@ const SIGNUP_MUTATION = gql`
         }
     }
 `;
+const theme = createMuiTheme({
+    palette: {
+        primary: green,
+        secondary: indigo,
+    },
+});
 
 export const Login: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -115,9 +122,9 @@ export const Login: React.FC = () => {
                         {mutationLoading || signupLoading ? (
                             <CircularProgress />
                         ) : (
-                            <>
+                            <ThemeProvider theme={theme}>
                                 <Button
-                                    color="primary"
+                                    color="secondary"
                                     onClick={() => {
                                         setError('');
                                         setSignUp(!signUp);
@@ -125,10 +132,20 @@ export const Login: React.FC = () => {
                                 >
                                     {!signUp ? 'Sign Up' : 'Login'}
                                 </Button>
-                                <Button variant="contained" color="secondary" onClick={submitHandler}>
-                                    {signUp ? 'Sign Up' : 'Login'}
+                                <Button
+                                    color="secondary"
+                                    onClick={() => {
+                                        setEmail('guest@guest.guest');
+                                        setPassword('guestguest');
+                                        setTimeout(submitHandler, 500);
+                                    }}
+                                >
+                                    Guest Login
                                 </Button>
-                            </>
+                                <Button variant="contained" color="primary" onClick={submitHandler}>
+                                    <span className="submitButton">{signUp ? 'Sign Up' : 'Login'}</span>
+                                </Button>
+                            </ThemeProvider>
                         )}
                     </div>
                     {error && <h4 id="LoginError">{error}</h4>}
@@ -138,6 +155,9 @@ export const Login: React.FC = () => {
     );
 };
 const LoginStyle = styled.main`
+    span.submitButton {
+        color: white;
+    }
     display: flex;
     height: 100%;
     width: 100%;
