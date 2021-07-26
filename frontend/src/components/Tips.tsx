@@ -20,6 +20,11 @@ export const Tips: React.FC<TipProps> = ({ task, mode }: TipProps) => {
                             {tip.body}
                         </li>
                     ))}
+                {task.tips.length < 1 && ['Settings', 'Log'].includes(mode) && (
+                    <li className="tipBody">
+                        You have no tips selected, try editing tips to see what other people have found useful.
+                    </li>
+                )}
             </ul>
             {['Settings', 'Log'].includes(mode) && (
                 <button
