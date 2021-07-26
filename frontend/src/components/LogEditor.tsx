@@ -116,7 +116,7 @@ export const LogEditor: React.FC<AddLogConfig> = ({ task, mode, log, setToHistor
                 toolbarHidden={mode === 'History'}
                 stripPastedStyles
                 toolbar={{
-                    options: ['blockType', 'fontSize', 'fontFamily', 'list', 'textAlign', 'link', 'image'],
+                    options: ['link', 'image', 'blockType', 'fontSize', 'fontFamily', , 'list', 'textAlign'],
                 }}
             />
             {mode === 'Log' && (
@@ -139,6 +139,11 @@ export const LogEditor: React.FC<AddLogConfig> = ({ task, mode, log, setToHistor
     );
 };
 const EditorStyle = styled.div`
+    img {
+        margin: 0 auto;
+        max-width: 75%;
+        max-height: 500px;
+    }
     margin-top: 1rem;
     width: 100%;
     grid-column: 1 / 5;
